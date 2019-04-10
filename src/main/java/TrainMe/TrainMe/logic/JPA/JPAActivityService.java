@@ -31,8 +31,11 @@ public class JPAActivityService implements ActivityService {
 			try {
 				String type = activityEntity.getType();
 				String targetClassName = "TrainMe.TrainMe.Plugins." + type + "Plugin";
+				
 				Class<?> pluginClass = Class.forName(targetClassName);
 				// autowire plugin
+				
+				System.err.println("Gad"+" "+targetClassName);
 				TrainMePlugins plugin = (TrainMePlugins) this.spring.getBean(pluginClass);
 				Object rv = plugin.invokeAction(activityEntity);
 				rvMap = this.jackson.readValue(this.jackson.writeValueAsString(rv), Map.class);
