@@ -1,5 +1,7 @@
 package TrainMe.TrainMe.FireBase.logic;
 
+import java.util.List;
+
 import TrainMe.TrainMe.logic.entity.CourseEntity;
 import TrainMe.TrainMe.logic.entity.GeneralCourseEntity;
 import TrainMe.TrainMe.logic.entity.TrainerEntity;
@@ -33,4 +35,5 @@ public interface IFireBase {
 	public int getCurrentNumOfUsersRegisteredToCourse(String courseId);
 	public void rateCourse(String courseId,String userId, int rate);
 	public boolean isDatePassed(String courseId);
+	public List<CourseEntity>getCoursesByDate(String date);
 }

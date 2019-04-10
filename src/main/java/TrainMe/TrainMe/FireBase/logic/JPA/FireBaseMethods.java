@@ -5,9 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
@@ -45,6 +47,7 @@ public class FireBaseMethods implements IFireBase {
 	private int currentNumOfUsers;
 	private int maxNumOfUsers;
 	private boolean generalFlag;
+	private List<CourseEntity>courseList;
 
 	@PostConstruct
 	public void configure() {
@@ -65,6 +68,7 @@ public class FireBaseMethods implements IFireBase {
 		this.ref = database.getReference("server/saving-data/fireblog");
 		this.databaseReference = database.getReference("/");
 		this.generalFlag = false;
+		this.courseList=new ArrayList<>();
 	}
 
 	@Override
@@ -496,4 +500,42 @@ public class FireBaseMethods implements IFireBase {
 		}
 	}
 
+	@Override
+	public List<CourseEntity> getCoursesByDate(String date) {
+		CountDownLatch countDownLatch = new CountDownLatch(1);
+		this.childReference = databaseReference.child("Courses");
+		this.childReference.addListenerForSingleValueEvent(new ValueEventListener() {
+			
+			@Override
+			public void onDataChange(DataSnapshot snapshot) {
+				if(snapshot.exists())
+				{
+					courseList.clear();
+					for(DataSnapshot ds:snapshot.getChildren())
+					{
+						if(ds.child("date").getValue().toString().equals(date))
+						{
+							CourseEntity courseEntity=ds.getValue(CourseEntity.class);
+							courseList.add(courseEntity);
+						}
+					}
+				}
+				countDownLatch.countDown();
+			}
+			
+			@Override
+			public void onCancelled(DatabaseError error) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		try {
+			countDownLatch.await();
+			return this.courseList;
+		} catch (InterruptedException ex) {
+			ex.printStackTrace();
+			return null;
+		}
+	}
+	
 }
