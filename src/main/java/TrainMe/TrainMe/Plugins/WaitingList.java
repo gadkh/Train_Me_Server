@@ -2,11 +2,11 @@ package TrainMe.TrainMe.Plugins;
 
 import TrainMe.TrainMe.logic.entity.UsersEntity;
 
-public class JoinToWaitingList {
+public class WaitingList {
 	private String courseId;
 	private UsersEntity user;
 
-	public JoinToWaitingList() {
+	public WaitingList() {
 		super();
 	}
 

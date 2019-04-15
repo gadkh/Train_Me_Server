@@ -38,7 +38,8 @@ import TrainMe.TrainMe.logic.entity.UsersEntity;
 public class FireBaseMethods implements IFireBase {
 	private FirebaseOptions options;
 	private FileInputStream serviceAccount;
-	private final String fileName = "D://Final Project Server/train-e0fc2-firebase-adminsdk-zm1mf-f441dd4bd4.json";
+	private final String fileName = "D://Final Project Server/train-e0fc2-firebase-adminsdk-zm1mf-f441dd4bd4.json"; 
+			//"C://Users/Golan/eclipse-projects/TrainMe_Server_Side/train-e0fc2-firebase-adminsdk-zm1mf-f441dd4bd4.json";
 	private FirebaseDatabase database;
 	private DatabaseReference ref;
 	private DatabaseReference databaseReference;
@@ -46,6 +47,7 @@ public class FireBaseMethods implements IFireBase {
 	private FirebaseAuth firebaseAuth;
 	private int currentNumOfUsers;
 	private int maxNumOfUsers;
+	private int position;
 	private boolean generalFlag;
 	private List<CourseEntity>courseList;
 
@@ -314,9 +316,8 @@ public class FireBaseMethods implements IFireBase {
 			@Override
 			public void onDataChange(DataSnapshot snapshot) {
 				countDownLatch.countDown();
-				int position = Integer.parseInt(snapshot.child("Courses").child(courseId).child("waitingList")
+				 position = Integer.parseInt(snapshot.child("Courses").child(courseId).child("waitingList")
 						.child(userId).child("position").getValue().toString());
-				// TODO deal with the return here
 			}
 
 			@Override
@@ -327,10 +328,10 @@ public class FireBaseMethods implements IFireBase {
 		try {
 
 			countDownLatch.await();
-			return 1;
+			return position;
 		} catch (InterruptedException ex) {
 			ex.printStackTrace();
-			return 0;
+			return -1;
 		}
 	}
 
@@ -416,15 +417,29 @@ public class FireBaseMethods implements IFireBase {
 		this.childReference = databaseReference.child("Courses").child(courseId).child("waitingList")
 				.child(userEntity.getUserId());
 		CountDownLatch countDownLatch = new CountDownLatch(1);
-		childReference.setValue(userEntity, new CompletionListener() {
-
+		
+		databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
 			@Override
-			public void onComplete(DatabaseError error, DatabaseReference ref) {
-				System.out.println("User is added to waiting list!");
+			public void onDataChange(DataSnapshot snapshot) {
+				String pos = String.valueOf(snapshot.child("Courses").child(courseId).child("waitingList").getChildrenCount() + 1);
+				Map map = new HashMap<String, Integer>();
+				map.put("position", pos);
+				childReference.setValue(map, new CompletionListener() {
+
+					@Override
+					public void onComplete(DatabaseError error, DatabaseReference ref) {
+						System.out.println("User is added to waiting list!");
+					}
+				});
 				countDownLatch.countDown();
 			}
-		});
 
+			@Override
+			public void onCancelled(DatabaseError error) {
+				// TODO Auto-generated method stub
+			}
+		});
+		
 		try {
 			// wait for firebase to saves record.
 			countDownLatch.await();
