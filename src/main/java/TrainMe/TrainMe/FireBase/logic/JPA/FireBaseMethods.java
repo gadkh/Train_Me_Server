@@ -38,7 +38,8 @@ import TrainMe.TrainMe.logic.entity.UsersEntity;
 public class FireBaseMethods implements IFireBase {
 	private FirebaseOptions options;
 	private FileInputStream serviceAccount;
-	private final String fileName = "D://Final Project Server/train-e0fc2-firebase-adminsdk-zm1mf-f441dd4bd4.json"; 
+	private String fileName="src/main/resources/train-e0fc2-firebase-adminsdk-zm1mf-f441dd4bd4.json";
+	//private final String fileName = "D://Final Project Server/train-e0fc2-firebase-adminsdk-zm1mf-f441dd4bd4.json"; 
 			//"C://Users/Golan/eclipse-projects/TrainMe_Server_Side/train-e0fc2-firebase-adminsdk-zm1mf-f441dd4bd4.json";
 	private FirebaseDatabase database;
 	private DatabaseReference ref;
