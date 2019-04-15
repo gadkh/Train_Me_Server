@@ -18,7 +18,7 @@ public class JPAGeneralCourseService implements GeneralCourseService {
 
 	@Override
 	public GeneralCourseEntity saveGeneralCourse(GeneralCourseEntity generalCourseEntity) {
-		return this.firebaseService.addCourse(generalCourseEntity);
+		return this.firebaseService.addGeneralCourse(generalCourseEntity);
 	}
 
 	@Override
