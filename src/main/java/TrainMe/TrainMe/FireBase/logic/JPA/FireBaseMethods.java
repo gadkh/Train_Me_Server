@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.annotation.PostConstruct;
 
@@ -39,8 +41,7 @@ public class FireBaseMethods implements IFireBase {
 	private FirebaseOptions options;
 	private FileInputStream serviceAccount;
 	private String fileName="src/main/resources/train-e0fc2-firebase-adminsdk-zm1mf-f441dd4bd4.json";
-	//private final String fileName = "D://Final Project Server/train-e0fc2-firebase-adminsdk-zm1mf-f441dd4bd4.json"; 
-			//"C://Users/Golan/eclipse-projects/TrainMe_Server_Side/train-e0fc2-firebase-adminsdk-zm1mf-f441dd4bd4.json";
+	
 	private FirebaseDatabase database;
 	private DatabaseReference ref;
 	private DatabaseReference databaseReference;
@@ -337,10 +338,19 @@ public class FireBaseMethods implements IFireBase {
 	}
 
 	@Override
-	public UsersEntity addUserToCourse(String courseId, UsersEntity userEntity) {
+	public UsersEntity addUserToCourse(String courseId, UsersEntity userEntity,int hrAVG, List<Integer>hrlist) {
 		this.childReference = databaseReference.child("Courses").child(courseId);
 		CountDownLatch countDownLatch = new CountDownLatch(1);
-		childReference.child("registered").child(userEntity.getUserId()).setValue(userEntity, new CompletionListener() {
+
+	//	Map map = new HashMap<String, Object>();
+
+
+		Map map = new HashMap<String, Object>();
+		map.put("user", userEntity);
+		map.put("HR_avg",hrAVG);
+		map.put("hrList", hrlist);
+		
+		childReference.child("registered").child(userEntity.getUserId()).setValue(map, new CompletionListener() {
 
 			@Override
 			public void onComplete(DatabaseError error, DatabaseReference ref) {
