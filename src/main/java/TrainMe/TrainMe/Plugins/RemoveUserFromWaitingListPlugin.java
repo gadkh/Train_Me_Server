@@ -11,27 +11,26 @@ import TrainMe.TrainMe.FireBase.logic.IFireBase;
 import TrainMe.TrainMe.logic.entity.ActivityEntity;
 
 @Component
-public class JoinToWaitingListPlugin implements TrainMePlugins {
-
+public class RemoveUserFromWaitingListPlugin implements TrainMePlugins {
 	private ObjectMapper jackson;
 	private IFireBase firebaseService;
 
 	@Autowired
-	public JoinToWaitingListPlugin(IFireBase firebaseService) {
+	public RemoveUserFromWaitingListPlugin(IFireBase firebaseService) {
 		this.firebaseService = firebaseService;
 		this.jackson = new ObjectMapper();
 	}
 
 	@Override
 	public Object invokeAction(ActivityEntity activityEntity) {
-		WaitingList joinToWaitingList = new WaitingList();
+		WaitingList deleteUserFromWaitingList = new WaitingList();
 		try {
-			joinToWaitingList = this.jackson.readValue(activityEntity.getAttributesJson(), WaitingList.class);
-			this.firebaseService.joinToWaitingList(joinToWaitingList.getCourseId(), joinToWaitingList.getUser());
-			return joinToWaitingList;
+			deleteUserFromWaitingList = this.jackson.readValue(activityEntity.getAttributesJson(), WaitingList.class);
+			this.firebaseService.deleteUserFromWaitingList(deleteUserFromWaitingList.getCourseId(),
+					deleteUserFromWaitingList.getUser().getUserId());
+			return deleteUserFromWaitingList;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
-
 }
