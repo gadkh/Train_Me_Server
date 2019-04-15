@@ -14,7 +14,8 @@ public interface IFireBase {
 	public void deleteByTrainerId(String trainertId);
 	
 	/**General Course Methods**/
-	public GeneralCourseEntity addCourse(GeneralCourseEntity generalCourseEntity);
+	public GeneralCourseEntity addGeneralCourse(GeneralCourseEntity generalCourseEntity);
+	public GeneralCourseEntity updateGeneralCourse(GeneralCourseEntity generalCourseEntity);
 	public void deleteByGeneralCourseName(String generalCourseName);
 
 	/**User Methods**/
@@ -25,6 +26,7 @@ public interface IFireBase {
 	public UsersEntity joinToWaitingList(String courseId,UsersEntity userEntity);
 	public void deleteUserFromCourse(String courseId, String userId);
 	public void deleteUserFromWaitingList(String courseId, String userId);
+	public UsersEntity updateUser(UsersEntity newUser);
 	
 	/**Course Methods**/
 	public CourseEntity addCourse(CourseEntity courseEntity);

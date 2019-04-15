@@ -114,7 +114,7 @@ public class FireBaseMethods implements IFireBase {
 	}
 
 	@Override
-	public GeneralCourseEntity addCourse(GeneralCourseEntity generalCourseEntity) {
+	public GeneralCourseEntity addGeneralCourse(GeneralCourseEntity generalCourseEntity) {
 		this.childReference = databaseReference.child("GeneralCourses").child(generalCourseEntity.getName());
 		CountDownLatch countDownLatch = new CountDownLatch(1);
 		childReference.setValue(generalCourseEntity, new CompletionListener() {
@@ -563,5 +563,14 @@ public class FireBaseMethods implements IFireBase {
 			return null;
 		}
 	}
+
+	@Override
+	public UsersEntity updateUser(UsersEntity newUser) {
+		return this.addUser(newUser);
+	}
 	
+	@Override
+	public GeneralCourseEntity updateGeneralCourse(GeneralCourseEntity generalCourseEntity) {
+		return this.addGeneralCourse(generalCourseEntity);
+	}
 }
