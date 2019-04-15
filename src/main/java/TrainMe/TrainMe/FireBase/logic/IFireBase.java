@@ -21,7 +21,7 @@ public interface IFireBase {
 	public UsersEntity addUser(UsersEntity userEntity);
 	public void deleteByUserId(String userId);
 	public boolean isUserRegistered(String courseId,String userId);
-	public UsersEntity addUserToCourse(String courseId,UsersEntity userEntity);
+	public UsersEntity addUserToCourse(String courseId, UsersEntity userEntity,int hrAVG,List<Integer>hrlist);
 	public UsersEntity joinToWaitingList(String courseId,UsersEntity userEntity);
 	public void deleteUserFromCourse(String courseId, String userId);
 	public void deleteUserFromWaitingList(String courseId, String userId);
