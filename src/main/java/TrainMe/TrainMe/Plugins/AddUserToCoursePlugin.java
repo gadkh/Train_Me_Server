@@ -28,9 +28,9 @@ public class AddUserToCoursePlugin implements TrainMePlugins {
 
 	@Override
 	public Object invokeAction(ActivityEntity activityEntity) {
-		AddUserToCourse addUserToCourse = new AddUserToCourse();
+		UserInCourse addUserToCourse = new UserInCourse();
 		try {
-			addUserToCourse = this.jackson.readValue(activityEntity.getAttributesJson(), AddUserToCourse.class);
+			addUserToCourse = this.jackson.readValue(activityEntity.getAttributesJson(), UserInCourse.class);
 			this.firebaseService.addUserToCourse(addUserToCourse.getCourseId(), addUserToCourse.getUser(),
 					addUserToCourse.getHrAVG(), addUserToCourse.getHrlist());
 			return addUserToCourse;
