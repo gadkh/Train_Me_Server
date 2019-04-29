@@ -273,6 +273,7 @@ public class FireBaseMethods implements IFireBase {
 
 	@Override
 	public boolean isUserRegistered(String courseId, String userId) {
+		System.err.println("Getting request from client!");
 		CountDownLatch countDownLatch = new CountDownLatch(1);
 		databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
 			@Override
@@ -285,14 +286,14 @@ public class FireBaseMethods implements IFireBase {
 				}
 				countDownLatch.countDown();
 				generalFlag=false;
-				 if(snapshot.child("Courses").child(courseId).child("registered").child(userId).exists()){
-					 generalFlag=true;				
-					 }
-				 else
-				 {
-					 generalFlag=false;
-				 }
-				 countDownLatch.countDown();
+//				 if(snapshot.child("Courses").child(courseId).child("registered").child(userId).exists()){
+//					 generalFlag=true;				
+//					 }
+//				 else
+//				 {
+//					 generalFlag=false;
+//				 }
+//				 countDownLatch.countDown();
 			}
 
 			@Override
