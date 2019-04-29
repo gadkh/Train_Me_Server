@@ -5,14 +5,14 @@ import java.util.List;
 
 import TrainMe.TrainMe.logic.entity.UsersEntity;
 
-public class AddUserToCourse {
+public class UserInCourse {
 
 	private String courseId;
 	private UsersEntity user;
 	private int hrAVG;
 	private List<Integer> hrlist;
 
-	public AddUserToCourse() {
+	public UserInCourse() {
 		super();
 		this.hrlist = new ArrayList<Integer>();
 	}
