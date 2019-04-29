@@ -5,7 +5,6 @@ public class CurrentNumOfUsersInCourse {
 	private int currentNumOfUsers;
 	public CurrentNumOfUsersInCourse() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public String getCourseId() {
 		return courseId;

@@ -1,11 +1,11 @@
 package TrainMe.TrainMe.Plugins;
 
-public class IsDatedPassed {
+public class IsDatePassed {
 
 	private String courseId;
 	private boolean isDatedPassed;
 
-	public IsDatedPassed() {
+	public IsDatePassed() {
 		super();
 	}
 

@@ -339,7 +339,7 @@ public class FireBaseMethods implements IFireBase {
 	}
 
 	@Override
-	public UsersEntity addUserToCourse(String courseId, UsersEntity userEntity,int hrAVG, List<Integer>hrlist) {
+	public UsersEntity addUserToCourse(String courseId, UsersEntity userEntity) {
 		this.childReference = databaseReference.child("Courses").child(courseId);
 		CountDownLatch countDownLatch = new CountDownLatch(1);
 
@@ -348,8 +348,6 @@ public class FireBaseMethods implements IFireBase {
 
 		Map map = new HashMap<String, Object>();
 		map.put("user", userEntity);
-		map.put("HR_avg",hrAVG);
-		map.put("hrList", hrlist);
 		
 		childReference.child("registered").child(userEntity.getUserId()).setValue(map, new CompletionListener() {
 
@@ -573,5 +571,32 @@ public class FireBaseMethods implements IFireBase {
 	@Override
 	public GeneralCourseEntity updateGeneralCourse(GeneralCourseEntity generalCourseEntity) {
 		return this.addGeneralCourse(generalCourseEntity);
+	}
+
+	@Override
+	public void writeHr(String courseId, String userId, List<Integer> hrList) {
+		this.childReference = databaseReference.child("Courses").child(courseId).child("registered").child(userId);
+		CountDownLatch countDownLatch = new CountDownLatch(1);
+
+		Map map = new HashMap<String, Object>();
+		map.put("HR_avg",582);
+		//TODO calc AVG
+		map.put("hrList", hrList);
+		
+		childReference.setValue(map, new CompletionListener() {
+
+			@Override
+			public void onComplete(DatabaseError error, DatabaseReference ref) {
+				System.out.println("Record saved!");
+				countDownLatch.countDown();
+			}
+		});
+
+		try {
+			// wait for firebase to saves record.
+			countDownLatch.await();
+		} catch (InterruptedException ex) {
+			ex.printStackTrace();
+		}
 	}
 }
