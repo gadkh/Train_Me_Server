@@ -27,7 +27,7 @@ public class WriteHRPlugin implements TrainMePlugins {
 		UserInCourse userInCourse=new UserInCourse();
 		try {
 			userInCourse = this.jackson.readValue(activityEntity.getAttributesJson(), UserInCourse.class);
-			this.firebaseService.writeHr(userInCourse.getCourseId(), userInCourse.getUser().getUserId()
+			this.firebaseService.writeHr(userInCourse.getCourseEntity().getCourseId(), userInCourse.getUser().getUserId()
 					,userInCourse.getHrlist());
 			return userInCourse;
 		} catch (IOException e) {

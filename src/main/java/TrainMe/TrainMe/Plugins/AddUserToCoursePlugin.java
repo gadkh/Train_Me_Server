@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import TrainMe.TrainMe.FireBase.logic.IFireBase;
 import TrainMe.TrainMe.logic.entity.ActivityEntity;
-import TrainMe.TrainMe.logic.entity.UsersEntity;
 
 @Component
 public class AddUserToCoursePlugin implements TrainMePlugins {
@@ -25,13 +24,13 @@ public class AddUserToCoursePlugin implements TrainMePlugins {
 		this.firebaseService = firebaseService;
 		this.jackson = new ObjectMapper();
 	}
-
+	
 	@Override
 	public Object invokeAction(ActivityEntity activityEntity) {
 		UserInCourse addUserToCourse = new UserInCourse();
 		try {
 			addUserToCourse = this.jackson.readValue(activityEntity.getAttributesJson(), UserInCourse.class);
-			this.firebaseService.addUserToCourse(addUserToCourse.getCourseId(), addUserToCourse.getUser());
+			this.firebaseService.addUserToCourse(addUserToCourse.getCourseEntity().getCourseId(), addUserToCourse.getUser());
 			return addUserToCourse;
 		} catch (IOException e) {
 			throw new RuntimeException(e);

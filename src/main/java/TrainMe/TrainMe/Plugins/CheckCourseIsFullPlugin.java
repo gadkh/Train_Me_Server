@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import TrainMe.TrainMe.FireBase.logic.IFireBase;
 import TrainMe.TrainMe.logic.entity.ActivityEntity;
 import TrainMe.TrainMe.logic.entity.CourseEntity;
+import TrainMe.TrainMe.logic.entity.UsersEntity;
 
 
 @Component
@@ -25,18 +26,15 @@ public class CheckCourseIsFullPlugin implements TrainMePlugins{
 
 	@Override
 	public Object invokeAction(ActivityEntity activityEntity) {
-		CheckCourseIsFull courseIsFull=new CheckCourseIsFull();
-		CourseEntity course;
+		UserInCourse userInCourse=new UserInCourse();
 		try {
-			course = this.jackson.readValue(activityEntity.getAttributesJson(), CourseEntity.class);
-			courseIsFull.setFull(this.firebaseService.checkCourseIsFull(course.getCourseId()));
-			return courseIsFull;
+			userInCourse=this.jackson.readValue(activityEntity.getAttributesJson(), UserInCourse.class);
+			userInCourse.setFull(this.firebaseService.checkCourseIsFull(userInCourse.getCourseEntity().getCourseId()));
+			return userInCourse;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);		
 			}
-		
-		//return courseIsFull;
 	}
 	
 }
