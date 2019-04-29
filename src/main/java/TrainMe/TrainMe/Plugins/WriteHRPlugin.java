@@ -1,9 +1,6 @@
 package TrainMe.TrainMe.Plugins;
 
 import java.io.IOException;
-import java.util.ArrayList;
-
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,30 +9,29 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import TrainMe.TrainMe.FireBase.logic.IFireBase;
 import TrainMe.TrainMe.logic.entity.ActivityEntity;
-import TrainMe.TrainMe.logic.entity.UsersEntity;
 
 @Component
-public class AddUserToCoursePlugin implements TrainMePlugins {
+public class WriteHRPlugin implements TrainMePlugins {
 
 	private ObjectMapper jackson;
 	private IFireBase firebaseService;
-
+	
 	@Autowired
-	public AddUserToCoursePlugin(IFireBase firebaseService) {
+	public WriteHRPlugin(IFireBase firebaseService) {
 		this.firebaseService = firebaseService;
 		this.jackson = new ObjectMapper();
 	}
-
+	
 	@Override
 	public Object invokeAction(ActivityEntity activityEntity) {
-		UserInCourse addUserToCourse = new UserInCourse();
+		UserInCourse userInCourse=new UserInCourse();
 		try {
-			addUserToCourse = this.jackson.readValue(activityEntity.getAttributesJson(), UserInCourse.class);
-			this.firebaseService.addUserToCourse(addUserToCourse.getCourseId(), addUserToCourse.getUser());
-			return addUserToCourse;
+			userInCourse = this.jackson.readValue(activityEntity.getAttributesJson(), UserInCourse.class);
+			this.firebaseService.writeHr(userInCourse.getCourseId(), userInCourse.getUser().getUserId()
+					,userInCourse.getHrlist());
+			return userInCourse;
 		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+			throw new RuntimeException(e);		
+			}
 	}
-
 }

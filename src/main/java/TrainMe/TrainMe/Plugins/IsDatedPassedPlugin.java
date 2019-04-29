@@ -23,9 +23,9 @@ public class IsDatedPassedPlugin implements TrainMePlugins {
 
 	@Override
 	public Object invokeAction(ActivityEntity activityEntity) {
-		IsDatedPassed isDatedPassed = new IsDatedPassed();
+		IsDatePassed isDatedPassed = new IsDatePassed();
 		try {
-			isDatedPassed = this.jackson.readValue(activityEntity.getAttributesJson(), IsDatedPassed.class);
+			isDatedPassed = this.jackson.readValue(activityEntity.getAttributesJson(), IsDatePassed.class);
 			isDatedPassed.setDatedPassed(firebaseService.isDatePassed(isDatedPassed.getCourseId()));
 			return isDatedPassed;
 		} catch (IOException e) {

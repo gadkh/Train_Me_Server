@@ -11,26 +11,28 @@ import TrainMe.TrainMe.FireBase.logic.IFireBase;
 import TrainMe.TrainMe.logic.entity.ActivityEntity;
 
 @Component
-public class GetUserRegisteredToCoursePlugin implements TrainMePlugins {
+public class SetCurrentNumOfUsersRegisteredToCoursePlugin implements TrainMePlugins {
+	
 	private ObjectMapper jackson;
 	private IFireBase firebaseService;
 	
 	@Autowired
-	public GetUserRegisteredToCoursePlugin(IFireBase firebaseService) {
+	public SetCurrentNumOfUsersRegisteredToCoursePlugin(IFireBase firebaseService) {
 		this.firebaseService=firebaseService;
 		this.jackson = new ObjectMapper();
 	}
 
 	@Override
 	public Object invokeAction(ActivityEntity activityEntity) {
-		UserRegisteredToCourse userRegisteredToCourse=new UserRegisteredToCourse();
+		CurrentNumOfUsersInCourse currentNumOfUsersInCourse=new CurrentNumOfUsersInCourse();
 		try {
-			userRegisteredToCourse = this.jackson.readValue(activityEntity.getAttributesJson(), UserRegisteredToCourse.class);
-			userRegisteredToCourse.setCurrentNumOfUsers((this.firebaseService.getCurrentNumOfUsersRegisteredToCourse(userRegisteredToCourse.getCourseId())));
-			return userRegisteredToCourse;
+			currentNumOfUsersInCourse = this.jackson.readValue(activityEntity.getAttributesJson(), CurrentNumOfUsersInCourse.class);
+			this.firebaseService.setCurrentNumOfUsersRegisteredToCourse(currentNumOfUsersInCourse.getCourseId(),currentNumOfUsersInCourse.getCurrentNumOfUsers());
+			return currentNumOfUsersInCourse;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);		
 			}
 	}
+
 }
