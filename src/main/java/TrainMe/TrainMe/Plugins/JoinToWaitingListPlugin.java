@@ -24,11 +24,11 @@ public class JoinToWaitingListPlugin implements TrainMePlugins {
 
 	@Override
 	public Object invokeAction(ActivityEntity activityEntity) {
-		WaitingList joinToWaitingList = new WaitingList();
+		UserInCourse userInCourse=new UserInCourse();
 		try {
-			joinToWaitingList = this.jackson.readValue(activityEntity.getAttributesJson(), WaitingList.class);
-			this.firebaseService.joinToWaitingList(joinToWaitingList.getCourseId(), joinToWaitingList.getUser());
-			return joinToWaitingList;
+			userInCourse = this.jackson.readValue(activityEntity.getAttributesJson(), UserInCourse.class);
+			this.firebaseService.joinToWaitingList(userInCourse.getCourseEntity().getCourseId(), userInCourse.getUser());
+			return userInCourse;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import TrainMe.TrainMe.Plugins.CheckCourseIsFull;
 import TrainMe.TrainMe.layout.TO.CourseTO;
 import TrainMe.TrainMe.logic.CourseService;
 import TrainMe.TrainMe.logic.entity.CourseEntity;

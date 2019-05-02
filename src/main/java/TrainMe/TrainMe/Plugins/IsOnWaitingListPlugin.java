@@ -23,11 +23,11 @@ public class IsOnWaitingListPlugin implements TrainMePlugins {
 	}
 	@Override
 	public Object invokeAction(ActivityEntity activityEntity) {
-		IsOnWaitingList isOnWaitingList=new IsOnWaitingList();
+		UserInCourse userInCourse=new UserInCourse();
 		try {
-			isOnWaitingList=this.jackson.readValue(activityEntity.getAttributesJson(), IsOnWaitingList.class);
-			isOnWaitingList.setOnWaitingList((firebaseService.isOnWaitingList(isOnWaitingList.getCourseId(), isOnWaitingList.getUserId())));
-			return isOnWaitingList;
+			userInCourse=this.jackson.readValue(activityEntity.getAttributesJson(), UserInCourse.class);
+			userInCourse.setOnWaitingList((firebaseService.isOnWaitingList(userInCourse.getCourseEntity().getCourseId(), userInCourse.getUser().getUserId())));
+			return userInCourse;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

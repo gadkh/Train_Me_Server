@@ -25,11 +25,11 @@ public class RateCoursePlugin implements TrainMePlugins {
 	
 	@Override
 	public Object invokeAction(ActivityEntity activityEntity) {
-		RateCourse rateCourse=new RateCourse();
+		UserInCourse userInCourse=new UserInCourse();
 		try {
-			rateCourse = this.jackson.readValue(activityEntity.getAttributesJson(), RateCourse.class);
-			this.firebaseService.rateCourse(rateCourse.getCourseId(), rateCourse.getUserId(), rateCourse.getRate());
-			return rateCourse;
+			userInCourse = this.jackson.readValue(activityEntity.getAttributesJson(), UserInCourse.class);
+			this.firebaseService.rateCourse(userInCourse.getCourseEntity().getCourseId(), userInCourse.getUser().getUserId(), userInCourse.getRate());
+			return userInCourse;
 		} catch (IOException e) {
 			throw new RuntimeException(e);		
 			}

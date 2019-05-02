@@ -23,11 +23,12 @@ public class GetCurrentNumOfUsersRegisteredToCoursePlugin implements TrainMePlug
 
 	@Override
 	public Object invokeAction(ActivityEntity activityEntity) {
-		CurrentNumOfUsersInCourse currentNumOfUsersInCourse=new CurrentNumOfUsersInCourse();
+		UserInCourse userInCourse=new UserInCourse();
 		try {
-			currentNumOfUsersInCourse = this.jackson.readValue(activityEntity.getAttributesJson(), CurrentNumOfUsersInCourse.class);
-			currentNumOfUsersInCourse.setCurrentNumOfUsers((this.firebaseService.getCurrentNumOfUsersRegisteredToCourse(currentNumOfUsersInCourse.getCourseId())));
-			return currentNumOfUsersInCourse;
+			userInCourse = this.jackson.readValue(activityEntity.getAttributesJson(), UserInCourse.class);
+			int currentNumOfUser=((this.firebaseService.getCurrentNumOfUsersRegisteredToCourse(userInCourse.getCourseEntity().getCourseId())));
+			userInCourse.getCourseEntity().setCurrentNumOfUsersInCourse(""+currentNumOfUser); 
+			return userInCourse;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);		
