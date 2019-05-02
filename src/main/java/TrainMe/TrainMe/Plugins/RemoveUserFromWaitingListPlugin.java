@@ -23,12 +23,12 @@ public class RemoveUserFromWaitingListPlugin implements TrainMePlugins {
 
 	@Override
 	public Object invokeAction(ActivityEntity activityEntity) {
-		WaitingList deleteUserFromWaitingList = new WaitingList();
+		UserInCourse userInCourse=new UserInCourse();
+	
 		try {
-			deleteUserFromWaitingList = this.jackson.readValue(activityEntity.getAttributesJson(), WaitingList.class);
-			this.firebaseService.deleteUserFromWaitingList(deleteUserFromWaitingList.getCourseId(),
-					deleteUserFromWaitingList.getUser().getUserId());
-			return deleteUserFromWaitingList;
+			userInCourse = this.jackson.readValue(activityEntity.getAttributesJson(), UserInCourse.class);
+			this.firebaseService.deleteUserFromWaitingList(userInCourse.getCourseEntity().getCourseId(),userInCourse.getUser().getUserId());
+			return userInCourse;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

@@ -24,9 +24,10 @@ public class IsUserRegisteredToCoursePlugin implements TrainMePlugins{
 	@Override
 	public Object invokeAction(ActivityEntity activityEntity) {
 		try {
-			IsUserRegisteredToCourse userRegistered=this.jackson.readValue(activityEntity.getAttributesJson(), IsUserRegisteredToCourse.class);
-			userRegistered.setRegistered(firebaseService.isUserRegistered(userRegistered.getCourseId(), userRegistered.getUserId()));
-			return userRegistered;
+			UserInCourse userInCourse=new UserInCourse();
+			userInCourse=this.jackson.readValue(activityEntity.getAttributesJson(), UserInCourse.class);
+			userInCourse.setRegisterdToCourse(firebaseService.isUserRegistered(userInCourse.getCourseEntity().getCourseId(), userInCourse.getUser().getUserId()));
+			return userInCourse;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

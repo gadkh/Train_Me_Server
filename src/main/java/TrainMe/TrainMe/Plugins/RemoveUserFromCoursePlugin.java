@@ -24,11 +24,11 @@ public class RemoveUserFromCoursePlugin implements TrainMePlugins {
 
 	@Override
 	public Object invokeAction(ActivityEntity activityEntity) {
-		RemoveUserFromCourse removeUserFromCourse = new RemoveUserFromCourse();
+		UserInCourse userInCourse=new UserInCourse();
 		try {
-			removeUserFromCourse = this.jackson.readValue(activityEntity.getAttributesJson(), RemoveUserFromCourse.class);
-			this.firebaseService.deleteUserFromCourse(removeUserFromCourse.getCourseId(),removeUserFromCourse.getUserId());
-			return removeUserFromCourse;
+			userInCourse = this.jackson.readValue(activityEntity.getAttributesJson(), UserInCourse.class);
+			this.firebaseService.deleteUserFromCourse(userInCourse.getCourseEntity().getCourseId(),userInCourse.getUser().getUserId());
+			return userInCourse;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
