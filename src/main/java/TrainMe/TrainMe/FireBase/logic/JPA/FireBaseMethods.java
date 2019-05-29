@@ -52,6 +52,7 @@ public class FireBaseMethods implements IFireBase {
 	private int position;
 	private boolean generalFlag;
 	private List<CourseEntity>courseList;
+	private List<TrainerEntity>trainerList;
 
 	@PostConstruct
 	public void configure() {
@@ -73,6 +74,7 @@ public class FireBaseMethods implements IFireBase {
 		this.databaseReference = database.getReference("/");
 		this.generalFlag = false;
 		this.courseList=new ArrayList<>();
+		this.trainerList=new ArrayList<>();
 	}
 
 	@Override
@@ -587,6 +589,41 @@ public class FireBaseMethods implements IFireBase {
 			countDownLatch.await();
 		} catch (InterruptedException ex) {
 			ex.printStackTrace();
+		}
+	}
+	
+	@Override
+	public List<TrainerEntity> getAllTrainers() {
+		CountDownLatch countDownLatch = new CountDownLatch(1);
+		this.childReference = databaseReference.child("Trainers");
+		this.childReference.addListenerForSingleValueEvent(new ValueEventListener() {
+			
+			@Override
+			public void onDataChange(DataSnapshot snapshot) {
+				if(snapshot.exists())
+				{
+					trainerList.clear();
+					for(DataSnapshot ds:snapshot.getChildren())
+					{
+						TrainerEntity trainerEntity=ds.getValue(TrainerEntity.class);
+						trainerList.add(trainerEntity);
+					}
+				}
+				countDownLatch.countDown();
+			}
+			
+			@Override
+			public void onCancelled(DatabaseError error) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		try {
+			countDownLatch.await();
+			return this.trainerList;
+		} catch (InterruptedException ex) {
+			ex.printStackTrace();
+			return null;
 		}
 	}
 }

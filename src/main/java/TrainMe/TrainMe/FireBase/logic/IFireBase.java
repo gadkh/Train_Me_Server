@@ -10,6 +10,7 @@ import TrainMe.TrainMe.logic.entity.UsersEntity;
 public interface IFireBase {
 	/**Trainer Methods**/
 	public TrainerEntity storeTrainer(TrainerEntity newTrainer);
+	public List<TrainerEntity> getAllTrainers();
 	public void deleteByTrainer(TrainerEntity trainetToDelete);
 	public void deleteByTrainerId(String trainertId);
 	

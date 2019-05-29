@@ -1,4 +1,6 @@
 package TrainMe.TrainMe.logic.JPA;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +32,10 @@ class JPATrainerService implements TrainerService{
 	public void deleteByTrainerId(String trainertId) {
 		this.firebaseService.deleteByTrainerId(trainertId);
 	}
-
+@Override
+public List<TrainerEntity> getAllTrainers() {
+	return this.firebaseService.getAllTrainers();
+}
 }
 
 
