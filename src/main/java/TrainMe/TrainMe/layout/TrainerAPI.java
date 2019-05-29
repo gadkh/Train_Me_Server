@@ -2,6 +2,8 @@ package TrainMe.TrainMe.layout;
 
 
 
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import TrainMe.TrainMe.layout.TO.TrainerTO;
 import TrainMe.TrainMe.logic.TrainerService;
 import TrainMe.TrainMe.logic.entity.TrainerEntity;
-
+@CrossOrigin(origins = "*")
 @RestController
 public class TrainerAPI {
 	private TrainerService trainerService;
@@ -25,24 +27,9 @@ public class TrainerAPI {
 		this.trainerService=trainerService;
 	}
 	
-//	@RequestMapping(method = RequestMethod.GET, path = "/stam", produces = MediaType.APPLICATION_JSON_VALUE)
-//	@CrossOrigin(origins="*")
-//	public String stam()
-//	{
-//		return "Hi Golan";
-//	}
-//	
-//	
-//	@RequestMapping(method = RequestMethod.POST, path = "/trainme/temp", consumes = MediaType.APPLICATION_JSON_VALUE)
-//	@CrossOrigin(origins="*")
-//	public void Temp(@RequestBody String name)
-//	{
-//		System.err.println(name);
-//	}
-//	
-	
+
 	@RequestMapping(method = RequestMethod.POST, path = "/trainme/trainers", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	@CrossOrigin(origins="*")
+	//@CrossOrigin(origins="*")
 	public TrainerTO addTrainer(@RequestBody TrainerTO trainerTO)
 	{
 		TrainerEntity trainerEntity=trainerTO.toEntity();
@@ -51,7 +38,7 @@ public class TrainerAPI {
 	}
 	
 	@RequestMapping(method = RequestMethod.DELETE, path = "/trainme/removeTrainer", consumes = MediaType.APPLICATION_JSON_VALUE)
-	@CrossOrigin(origins="*")
+	//@CrossOrigin(origins="*")
 	public void removeTrainer(@RequestBody TrainerTO trainerTO)
 	{
 		
@@ -59,10 +46,21 @@ public class TrainerAPI {
 		this.trainerService.deleteByTrainer(trainerToRemove);
 	}
 	
+	//@CrossOrigin(origins="*")
 	@RequestMapping(method = RequestMethod.DELETE, path = "/trainme/removeTrainer/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-	@CrossOrigin(origins="*")
 	public void removeTrainerById(@PathVariable("id") String id)
 	{
+		System.err.println("Cors");
 		this.trainerService.deleteByTrainerId(id);
+	}
+	
+	//@CrossOrigin(origins="*")
+	@RequestMapping(method = RequestMethod.GET, path = "/trainme/getAllTrainers", produces = MediaType.APPLICATION_JSON_VALUE)
+	public TrainerTO[] getAllTrainers() {
+		return trainerService.getAllTrainers()
+				.stream()
+				.map(TrainerTO::new)
+				.collect(Collectors.toList())
+				.toArray(new TrainerTO[0]);
 	}
 }

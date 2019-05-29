@@ -25,7 +25,6 @@ public class GetCoursesByDatePlugin implements TrainMePlugins {
 
 	@Override
 	public Object invokeAction(ActivityEntity activityEntity) {
-		System.err.println("gad2");
 		try {
 			GetCoursesByDate coursesByDate=this.jackson.readValue(activityEntity.getAttributesJson(), GetCoursesByDate.class);
 			coursesByDate.setCoursesList(this.firebaseService.getCoursesByDate(coursesByDate.getDate()));
