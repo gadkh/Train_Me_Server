@@ -23,6 +23,7 @@ public class IsUserRegisteredToCoursePlugin implements TrainMePlugins{
 	
 	@Override
 	public Object invokeAction(ActivityEntity activityEntity) {
+
 		try {
 			UserInCourse userInCourse=new UserInCourse();
 			userInCourse=this.jackson.readValue(activityEntity.getAttributesJson(), UserInCourse.class);

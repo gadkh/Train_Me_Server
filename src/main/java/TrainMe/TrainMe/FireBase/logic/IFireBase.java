@@ -28,6 +28,7 @@ public interface IFireBase {
 	public void deleteUserFromCourse(String courseId, String userId);
 	public void deleteUserFromWaitingList(String courseId, String userId);
 	public UsersEntity updateUser(UsersEntity newUser);
+	public UsersEntity getUserById(String id);
 	
 	/**Course Methods**/
 	public CourseEntity addCourse(CourseEntity courseEntity);
@@ -38,6 +39,7 @@ public interface IFireBase {
 	public int getCurrentNumOfUsersRegisteredToCourse(String courseId);
 	public void rateCourse(String courseId,String userId, int rate);
 	public boolean isDatePassed(String courseId);
-	public void writeHr(String courseId, String userId,List<Integer>hrList);
+	public void writeHr(String courseId, String userId ,List<Integer>hrList);
 	public List<CourseEntity>getCoursesByDate(String date);
+	public int calculateCalories(int avgHR,String userId); 
 }

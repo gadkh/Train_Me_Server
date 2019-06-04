@@ -56,11 +56,13 @@ public class TrainerAPI {
 	
 	//@CrossOrigin(origins="*")
 	@RequestMapping(method = RequestMethod.GET, path = "/trainme/getAllTrainers", produces = MediaType.APPLICATION_JSON_VALUE)
-	public TrainerTO[] getAllTrainers() {
-		return trainerService.getAllTrainers()
-				.stream()
-				.map(TrainerTO::new)
-				.collect(Collectors.toList())
-				.toArray(new TrainerTO[0]);
+//	public TrainerTO[] getAllTrainers() {
+	public String getAllTrainers() {
+		return "hi";
+//		return trainerService.getAllTrainers()
+//				.stream()
+//				.map(TrainerTO::new)
+//				.collect(Collectors.toList())
+//				.toArray(new TrainerTO[0]);
 	}
 }

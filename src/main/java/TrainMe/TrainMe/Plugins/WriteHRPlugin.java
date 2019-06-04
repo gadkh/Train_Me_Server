@@ -25,6 +25,7 @@ public class WriteHRPlugin implements TrainMePlugins {
 	@Override
 	public Object invokeAction(ActivityEntity activityEntity) {
 		UserInCourse userInCourse=new UserInCourse();
+		System.err.println("in plugin");
 		try {
 			userInCourse = this.jackson.readValue(activityEntity.getAttributesJson(), UserInCourse.class);
 			this.firebaseService.writeHr(userInCourse.getCourseEntity().getCourseId(), userInCourse.getUser().getUserId()

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -53,6 +54,7 @@ public class FireBaseMethods implements IFireBase {
 	private boolean generalFlag;
 	private List<CourseEntity>courseList;
 	private List<TrainerEntity>trainerList;
+	private UsersEntity myUser;
 
 	@PostConstruct
 	public void configure() {
@@ -275,6 +277,7 @@ public class FireBaseMethods implements IFireBase {
 
 	@Override
 	public boolean isUserRegistered(String courseId, String userId) {
+
 		CountDownLatch countDownLatch = new CountDownLatch(1);
 		databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
 			@Override
@@ -296,6 +299,7 @@ public class FireBaseMethods implements IFireBase {
 		try {
 
 			countDownLatch.await();
+
 			return generalFlag;
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -565,17 +569,60 @@ public class FireBaseMethods implements IFireBase {
 		return this.addGeneralCourse(generalCourseEntity);
 	}
 
+	
 	@Override
 	public void writeHr(String courseId, String userId, List<Integer> hrList) {
-		this.childReference = databaseReference.child("Courses").child(courseId).child("registered").child(userId);
 		CountDownLatch countDownLatch = new CountDownLatch(1);
-
+		//System.err.println(getUserById(userId).getGender());
 		Map map = new HashMap<String, Object>();
-		map.put("HR_avg",582);
-		//TODO calc AVG
-		map.put("hrList", hrList);
-		
-		childReference.setValue(map, new CompletionListener() {
+		int avg = 0;
+		if (hrList.size() >= 30) {
+			int size = 30;
+			int hrListNewSize = hrList.size() / size;
+			int k = 0;
+			Integer arr[] = new Integer[size];
+			for (int i = 0; i < size; i++) {
+				int avgIn = 0;
+				boolean flag = true;
+				for (int j = 0; j < hrListNewSize && flag == true; j++) {
+					avgIn += hrList.get(k);
+					k++;
+					if (k >= hrList.size()) {
+						flag = false;
+					}
+				}
+				if (flag == false) {
+					int temp = hrList.size() - (hrListNewSize * size);
+					avgIn = avgIn / temp;
+				} else {
+					avgIn = avgIn / hrListNewSize;
+				}
+				arr[i] = avgIn;
+			}
+			for (int i = 0; i < size; i++) {
+				avg += arr[i];
+			}
+			avg = avg / size;
+			List<Integer> list = Arrays.asList(arr);
+
+			map.put("HR_avg", avg);
+			map.put("hrList", list);
+		}
+		else
+		{
+			for(int i=0;i<hrList.size();i++)
+			{
+				avg+=hrList.get(i);
+			}
+			avg=avg/hrList.size();
+			map.put("HR_avg", avg);
+			map.put("hrList", hrList);
+		}
+		int c=calculateCalories(avg, userId);
+		System.err.println("C "+c);
+		map.put("calories", c);
+		this.childReference = databaseReference.child("Courses").child(courseId).child("registered").child(userId);
+		childReference.child("HR").setValue(map, new CompletionListener() {
 
 			@Override
 			public void onComplete(DatabaseError error, DatabaseReference ref) {
@@ -592,8 +639,10 @@ public class FireBaseMethods implements IFireBase {
 		}
 	}
 	
+	
 	@Override
 	public List<TrainerEntity> getAllTrainers() {
+		System.err.println("In get all");
 		CountDownLatch countDownLatch = new CountDownLatch(1);
 		this.childReference = databaseReference.child("Trainers");
 		this.childReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -625,5 +674,62 @@ public class FireBaseMethods implements IFireBase {
 			ex.printStackTrace();
 			return null;
 		}
+	}
+
+	@Override
+	public UsersEntity getUserById(String id) {
+		System.err.println("in Start getUserById");
+
+		CountDownLatch countDownLatch = new CountDownLatch(1);
+		this.childReference = databaseReference.child("Users").child(id);
+		this.childReference.addListenerForSingleValueEvent(new ValueEventListener() {
+			
+			@Override
+			public void onDataChange(DataSnapshot snapshot) {
+				if(snapshot.exists())
+				{
+					String fullName = snapshot.child("fullName").getValue().toString();
+			        String gender = snapshot.child("gender").getValue().toString();
+			        String height = snapshot.child("height").getValue().toString();
+			        String weigh = snapshot.child("weigh").getValue().toString();
+			        myUser=new UsersEntity();
+					myUser.setFullName(fullName);
+					myUser.setGender(gender);
+					myUser.setHeight(height);
+					myUser.setWeigh(weigh);
+					 System.err.println(myUser);
+				}
+				countDownLatch.countDown();
+			}
+			
+			@Override
+			public void onCancelled(DatabaseError error) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		try {
+			countDownLatch.await();
+			System.err.println("in end getUserById");
+
+			return this.myUser;
+		} catch (InterruptedException ex) {
+			ex.printStackTrace();
+			return null;
+		}
+	}
+	
+	@Override
+	public int calculateCalories(int avgHR, String userId) {
+		UsersEntity user=getUserById(userId);
+		int age=28;
+		int c;
+		int t=36;
+//		float w=Float.parseFloat(user.getWeigh());
+		float w=146;
+		c=(int) ((0.4472*138-0.05741*w+0.074*age-20.4022)*t/4.184);
+		if(user.getGender().equals("M"))
+			return c*154;
+		else return c;
 	}
 }
