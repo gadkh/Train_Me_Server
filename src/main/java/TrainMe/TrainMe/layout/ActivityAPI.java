@@ -2,6 +2,7 @@ package TrainMe.TrainMe.layout;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,13 +20,14 @@ public class ActivityAPI {
 	public void init(ActivityService activityService) {
 		this.activityService = activityService;
 	}
-
+	@CrossOrigin(origins="*")
 	@RequestMapping(
 			method=RequestMethod.POST,
 			path="/trainme/activity",
 			produces=MediaType.APPLICATION_JSON_VALUE,
 			consumes=MediaType.APPLICATION_JSON_VALUE)
 		public Object performActivity(@RequestBody ActivitiTO activitiTO)  {
+		System.err.println("HERE");
 		ActivityEntity activityRetrive=activitiTO.toEntity();
 		this.activityService.performActivity(activityRetrive);
 		return new ActivitiTO(activityRetrive);
