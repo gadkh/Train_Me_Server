@@ -2,7 +2,7 @@ package TrainMe.TrainMe.logic.entity;
 
 public class UsersEntity {
 	private String fullName;
-	private String height;
+	private String age;
 	private String gender;
 	private String userId;
 	private String weigh;
@@ -11,10 +11,10 @@ public class UsersEntity {
 		super();
 	}
 
-	public UsersEntity(String fullName, String height, String gender, String userId, String weigh) {
+	public UsersEntity(String fullName, String age, String gender, String userId, String weigh) {
 		super();
 		this.fullName = fullName;
-		this.height = height;
+		this.age = age;
 		this.gender = gender;
 		this.userId = userId;
 		this.weigh = weigh;
@@ -28,12 +28,12 @@ public class UsersEntity {
 		this.fullName = fullName;
 	}
 
-	public String getHeight() {
-		return height;
+	public String getAge() {
+		return age;
 	}
 
-	public void setHeight(String height) {
-		this.height = height;
+	public void setAge(String age) {
+		this.age = age;
 	}
 
 	public String getGender() {

@@ -4,7 +4,7 @@ import TrainMe.TrainMe.logic.entity.UsersEntity;
 
 public class UsersTO {
 	private String fullName;
-	private String height;
+	private String age;
 	private String gender;
 	private String userId;
 	private String weigh;
@@ -13,10 +13,10 @@ public class UsersTO {
 		super();
 	}
 
-	public UsersTO(String fullName, String height, String gender, String userId, String weigh) {
+	public UsersTO(String fullName, String age, String gender, String userId, String weigh) {
 		super();
 		this.fullName = fullName;
-		this.height = height;
+		this.age = age;
 		this.gender = gender;
 		this.userId = userId;
 		this.weigh = weigh;
@@ -25,7 +25,7 @@ public class UsersTO {
 	public UsersTO(UsersEntity userEntity) {
 		this.fullName=userEntity.getFullName();
 		this.gender=userEntity.getGender();
-		this.height=userEntity.getHeight();
+		this.age=userEntity.getAge();
 		this.userId=userEntity.getUserId();
 		this.weigh=userEntity.getWeigh();
 	}
@@ -38,12 +38,12 @@ public class UsersTO {
 		this.fullName = fullName;
 	}
 
-	public String getHeight() {
-		return height;
+	public String getAge() {
+		return age;
 	}
 
-	public void setHeight(String height) {
-		this.height = height;
+	public void setAge(String age) {
+		this.age = age;
 	}
 
 	public String getGender() {
@@ -75,7 +75,7 @@ public class UsersTO {
 		UsersEntity userEntity=new UsersEntity();
 		userEntity.setFullName(this.fullName);
 		userEntity.setGender(this.gender);
-		userEntity.setHeight(this.height);
+		userEntity.setAge(this.age);
 		userEntity.setUserId(this.userId);
 		userEntity.setWeigh(this.weigh);
 		return userEntity;
