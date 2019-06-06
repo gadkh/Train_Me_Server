@@ -41,8 +41,8 @@ import TrainMe.TrainMe.logic.entity.UsersEntity;
 public class FireBaseMethods implements IFireBase {
 	private FirebaseOptions options;
 	private FileInputStream serviceAccount;
-	private String fileName="src/main/resources/train-e0fc2-firebase-adminsdk-zm1mf-f441dd4bd4.json";
-	
+	private String fileName = "src/main/resources/train-e0fc2-firebase-adminsdk-zm1mf-f441dd4bd4.json";
+
 	private FirebaseDatabase database;
 	private DatabaseReference ref;
 	private DatabaseReference databaseReference;
@@ -52,8 +52,8 @@ public class FireBaseMethods implements IFireBase {
 	private int maxNumOfUsers;
 	private int position;
 	private boolean generalFlag;
-	private List<CourseEntity>courseList;
-	private List<TrainerEntity>trainerList;
+	private List<CourseEntity> courseList;
+	private List<TrainerEntity> trainerList;
 	private UsersEntity myUser;
 
 	@PostConstruct
@@ -75,8 +75,8 @@ public class FireBaseMethods implements IFireBase {
 		this.ref = database.getReference("server/saving-data/fireblog");
 		this.databaseReference = database.getReference("/");
 		this.generalFlag = false;
-		this.courseList=new ArrayList<>();
-		this.trainerList=new ArrayList<>();
+		this.courseList = new ArrayList<>();
+		this.trainerList = new ArrayList<>();
 	}
 
 	@Override
@@ -315,8 +315,8 @@ public class FireBaseMethods implements IFireBase {
 			@Override
 			public void onDataChange(DataSnapshot snapshot) {
 				countDownLatch.countDown();
-				 position = Integer.parseInt(snapshot.child("Courses").child(courseId).child("waitingList")
-						.child(userId).child("position").getValue().toString());
+				position = Integer.parseInt(snapshot.child("Courses").child(courseId).child("waitingList").child(userId)
+						.child("position").getValue().toString());
 			}
 
 			@Override
@@ -339,12 +339,11 @@ public class FireBaseMethods implements IFireBase {
 		this.childReference = databaseReference.child("Courses").child(courseId);
 		CountDownLatch countDownLatch = new CountDownLatch(1);
 
-	//	Map map = new HashMap<String, Object>();
-
+		// Map map = new HashMap<String, Object>();
 
 		Map map = new HashMap<String, Object>();
 		map.put("user", userEntity);
-		
+
 		childReference.child("registered").child(userEntity.getUserId()).setValue(map, new CompletionListener() {
 
 			@Override
@@ -423,11 +422,12 @@ public class FireBaseMethods implements IFireBase {
 		this.childReference = databaseReference.child("Courses").child(courseId).child("waitingList")
 				.child(userEntity.getUserId());
 		CountDownLatch countDownLatch = new CountDownLatch(1);
-		
+
 		databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
 			@Override
 			public void onDataChange(DataSnapshot snapshot) {
-				String pos = String.valueOf(snapshot.child("Courses").child(courseId).child("waitingList").getChildrenCount() + 1);
+				String pos = String
+						.valueOf(snapshot.child("Courses").child(courseId).child("waitingList").getChildrenCount() + 1);
 				Map map = new HashMap<String, Integer>();
 				map.put("position", pos);
 				childReference.setValue(map, new CompletionListener() {
@@ -445,7 +445,7 @@ public class FireBaseMethods implements IFireBase {
 				// TODO Auto-generated method stub
 			}
 		});
-		
+
 		try {
 			// wait for firebase to saves record.
 			countDownLatch.await();
@@ -499,9 +499,9 @@ public class FireBaseMethods implements IFireBase {
 				try {
 					current_Date = mdFormat.parse(currentDateString);
 					course_Date = mdFormat.parse(courseDateString);
-					 if (course_Date.compareTo(current_Date) < 0) {
-						 generalFlag = true;
-				        }
+					if (course_Date.compareTo(current_Date) < 0) {
+						generalFlag = true;
+					}
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
@@ -526,28 +526,25 @@ public class FireBaseMethods implements IFireBase {
 		CountDownLatch countDownLatch = new CountDownLatch(1);
 		this.childReference = databaseReference.child("Courses");
 		this.childReference.addListenerForSingleValueEvent(new ValueEventListener() {
-			
+
 			@Override
 			public void onDataChange(DataSnapshot snapshot) {
-				if(snapshot.exists())
-				{
+				if (snapshot.exists()) {
 					courseList.clear();
-					for(DataSnapshot ds:snapshot.getChildren())
-					{
-						if(ds.child("date").getValue().toString().equals(date))
-						{
-							CourseEntity courseEntity=ds.getValue(CourseEntity.class);
+					for (DataSnapshot ds : snapshot.getChildren()) {
+						if (ds.child("date").getValue().toString().equals(date)) {
+							CourseEntity courseEntity = ds.getValue(CourseEntity.class);
 							courseList.add(courseEntity);
 						}
 					}
 				}
 				countDownLatch.countDown();
 			}
-			
+
 			@Override
 			public void onCancelled(DatabaseError error) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
 		try {
@@ -563,17 +560,16 @@ public class FireBaseMethods implements IFireBase {
 	public UsersEntity updateUser(UsersEntity newUser) {
 		return this.addUser(newUser);
 	}
-	
+
 	@Override
 	public GeneralCourseEntity updateGeneralCourse(GeneralCourseEntity generalCourseEntity) {
 		return this.addGeneralCourse(generalCourseEntity);
 	}
 
-	
 	@Override
 	public void writeHr(String courseId, String userId, List<Integer> hrList) {
 		CountDownLatch countDownLatch = new CountDownLatch(1);
-		//System.err.println(getUserById(userId).getGender());
+		// System.err.println(getUserById(userId).getGender());
 		Map map = new HashMap<String, Object>();
 		int avg = 0;
 		if (hrList.size() >= 30) {
@@ -607,19 +603,16 @@ public class FireBaseMethods implements IFireBase {
 
 			map.put("HR_avg", avg);
 			map.put("hrList", list);
-		}
-		else
-		{
-			for(int i=0;i<hrList.size();i++)
-			{
-				avg+=hrList.get(i);
+		} else {
+			for (int i = 0; i < hrList.size(); i++) {
+				avg += hrList.get(i);
 			}
-			avg=avg/hrList.size();
+			avg = avg / hrList.size();
 			map.put("HR_avg", avg);
 			map.put("hrList", hrList);
 		}
-		int c=calculateCalories(avg, userId);
-		System.err.println("C "+c);
+		int c = calculateCalories(avg, userId);
+		System.err.println("C " + c);
 		map.put("calories", c);
 		this.childReference = databaseReference.child("Courses").child(courseId).child("registered").child(userId);
 		childReference.child("HR").setValue(map, new CompletionListener() {
@@ -638,33 +631,30 @@ public class FireBaseMethods implements IFireBase {
 			ex.printStackTrace();
 		}
 	}
-	
-	
+
 	@Override
 	public List<TrainerEntity> getAllTrainers() {
 		System.err.println("In get all");
 		CountDownLatch countDownLatch = new CountDownLatch(1);
 		this.childReference = databaseReference.child("Trainers");
 		this.childReference.addListenerForSingleValueEvent(new ValueEventListener() {
-			
+
 			@Override
 			public void onDataChange(DataSnapshot snapshot) {
-				if(snapshot.exists())
-				{
+				if (snapshot.exists()) {
 					trainerList.clear();
-					for(DataSnapshot ds:snapshot.getChildren())
-					{
-						TrainerEntity trainerEntity=ds.getValue(TrainerEntity.class);
+					for (DataSnapshot ds : snapshot.getChildren()) {
+						TrainerEntity trainerEntity = ds.getValue(TrainerEntity.class);
 						trainerList.add(trainerEntity);
 					}
 				}
 				countDownLatch.countDown();
 			}
-			
+
 			@Override
 			public void onCancelled(DatabaseError error) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
 		try {
@@ -683,29 +673,28 @@ public class FireBaseMethods implements IFireBase {
 		CountDownLatch countDownLatch = new CountDownLatch(1);
 		this.childReference = databaseReference.child("Users").child(id);
 		this.childReference.addListenerForSingleValueEvent(new ValueEventListener() {
-			
+
 			@Override
 			public void onDataChange(DataSnapshot snapshot) {
-				if(snapshot.exists())
-				{
+				if (snapshot.exists()) {
 					String fullName = snapshot.child("fullName").getValue().toString();
-			        String gender = snapshot.child("gender").getValue().toString();
-			        String height = snapshot.child("height").getValue().toString();
-			        String weigh = snapshot.child("weigh").getValue().toString();
-			        myUser=new UsersEntity();
+					String gender = snapshot.child("gender").getValue().toString();
+					String age = snapshot.child("age").getValue().toString();
+					String weigh = snapshot.child("weigh").getValue().toString();
+					myUser = new UsersEntity();
 					myUser.setFullName(fullName);
 					myUser.setGender(gender);
-					myUser.setHeight(height);
+					myUser.setAge(age);
 					myUser.setWeigh(weigh);
-					 System.err.println(myUser);
+					System.err.println(myUser);
 				}
 				countDownLatch.countDown();
 			}
-			
+
 			@Override
 			public void onCancelled(DatabaseError error) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
 		try {
@@ -718,18 +707,18 @@ public class FireBaseMethods implements IFireBase {
 			return null;
 		}
 	}
-	
+
 	@Override
 	public int calculateCalories(int avgHR, String userId) {
-		UsersEntity user=getUserById(userId);
-		int age=28;
-		int c;
-		int t=36;
-//		float w=Float.parseFloat(user.getWeigh());
-		float w=146;
-		c=(int) ((0.4472*138-0.05741*w+0.074*age-20.4022)*t/4.184);
-		if(user.getGender().equals("M"))
-			return c*154;
-		else return c;
+		UsersEntity user = getUserById(userId);
+		int calories;
+		int age = Integer.parseInt(user.getAge());
+		float w = Float.parseFloat(user.getWeigh());
+		int t = 60; // all the Courses is 1 hour
+		calories = (int) ((0.4472 * avgHR - 0.05741 * w + 0.074 * age - 20.4022) * t / 4.184);
+		if (user.getGender().equals("M")) {
+			calories = (int) ((int)calories * 1.54);
+		}
+			return calories;
 	}
 }
