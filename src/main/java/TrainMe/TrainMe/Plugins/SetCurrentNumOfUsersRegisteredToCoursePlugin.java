@@ -35,5 +35,4 @@ public class SetCurrentNumOfUsersRegisteredToCoursePlugin implements TrainMePlug
 			throw new RuntimeException(e);		
 			}
 	}
-
 }
