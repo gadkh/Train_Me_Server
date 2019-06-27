@@ -63,12 +63,4 @@ public class TrainerAPI {
 				.toArray(new TrainerTO[0]);
 	}
 	
-	@CrossOrigin(origins="*")
-	@RequestMapping(method = RequestMethod.GET, path = "/trainme/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public TrainerTO getTrainerById(@PathVariable("id") String id) {
-		//UserEntity userRetrive = this.userServices.varificationUser(playground, email, code);
-		//return new UserTo(userRetrive);
-		return null;
-	}
-	
 }
