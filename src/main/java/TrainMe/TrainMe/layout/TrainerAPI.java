@@ -38,7 +38,7 @@ public class TrainerAPI {
 	}
 	
 	@RequestMapping(method = RequestMethod.DELETE, path = "/trainme/removeTrainer", consumes = MediaType.APPLICATION_JSON_VALUE)
-	//@CrossOrigin(origins="*")
+	@CrossOrigin(origins="*")
 	public void removeTrainer(@RequestBody TrainerTO trainerTO)
 	{
 		
@@ -46,23 +46,29 @@ public class TrainerAPI {
 		this.trainerService.deleteByTrainer(trainerToRemove);
 	}
 	
-	//@CrossOrigin(origins="*")
-	@RequestMapping(method = RequestMethod.DELETE, path = "/trainme/removeTrainer/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@CrossOrigin(origins="*")
+	@RequestMapping(method = RequestMethod.DELETE, path = "/trainme/removeTrainer/{id}")
 	public void removeTrainerById(@PathVariable("id") String id)
 	{
-		System.err.println("Cors");
 		this.trainerService.deleteByTrainerId(id);
 	}
 	
 	//@CrossOrigin(origins="*")
 	@RequestMapping(method = RequestMethod.GET, path = "/trainme/getAllTrainers", produces = MediaType.APPLICATION_JSON_VALUE)
-//	public TrainerTO[] getAllTrainers() {
-	public String getAllTrainers() {
-		return "hi";
-//		return trainerService.getAllTrainers()
-//				.stream()
-//				.map(TrainerTO::new)
-//				.collect(Collectors.toList())
-//				.toArray(new TrainerTO[0]);
+	public TrainerTO[] getAllTrainers() {		
+		return trainerService.getAllTrainers()
+				.stream()
+				.map(TrainerTO::new)
+				.collect(Collectors.toList())
+				.toArray(new TrainerTO[0]);
 	}
+	
+	@CrossOrigin(origins="*")
+	@RequestMapping(method = RequestMethod.GET, path = "/trainme/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public TrainerTO getTrainerById(@PathVariable("id") String id) {
+		//UserEntity userRetrive = this.userServices.varificationUser(playground, email, code);
+		//return new UserTo(userRetrive);
+		return null;
+	}
+	
 }
