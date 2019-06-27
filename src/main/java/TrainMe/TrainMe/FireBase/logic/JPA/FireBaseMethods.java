@@ -335,7 +335,7 @@ public class FireBaseMethods implements IFireBase {
 	}
 
 	@Override
-	public UsersEntity addUserToCourse(String courseId, UsersEntity userEntity) {
+	public synchronized UsersEntity addUserToCourse(String courseId, UsersEntity userEntity) {
 		this.childReference = databaseReference.child("Courses").child(courseId);
 		CountDownLatch countDownLatch = new CountDownLatch(1);
 
@@ -343,12 +343,14 @@ public class FireBaseMethods implements IFireBase {
 
 		Map map = new HashMap<String, Object>();
 		map.put("user", userEntity);
-
+		
+		
 		childReference.child("registered").child(userEntity.getUserId()).setValue(map, new CompletionListener() {
 
 			@Override
 			public void onComplete(DatabaseError error, DatabaseReference ref) {
 				System.out.println("Record saved!");
+				//setCurrentNumOfUsersRegisteredToCourse(courseId, '+');
 				countDownLatch.countDown();
 			}
 		});
@@ -363,9 +365,40 @@ public class FireBaseMethods implements IFireBase {
 		}
 	}
 
+//	@Override
+//	public void setCurrentNumOfUsersRegisteredToCourse(String courseId,int newInt) {// char sign) {
+//		System.err.println("In setCurrentNumOfUsersRegisteredToCourse");
+//		CountDownLatch countDownLatch = new CountDownLatch(1);
+//		
+//		currentNumOfUsers = getCurrentNumOfUsersRegisteredToCourse(courseId);
+//		System.err.println("AFTER GET");
+//
+////		if(sign=='+') {
+////			System.err.println("In if(sign=='+')");
+////			currentNumOfUsers++;
+////		}else {
+////			System.err.println("In ELSE if(sign=='+')");
+////			currentNumOfUsers--;
+////		}
+//		currentNumOfUsers = newInt;
+//		this.childReference = databaseReference.child("Courses").child(courseId);
+//		childReference.child("currentNumOfUsersInCourse").setValue(String.valueOf(currentNumOfUsers),
+//				new CompletionListener() {
+//					@Override
+//					public void onComplete(DatabaseError error, DatabaseReference ref) {
+//						System.out.println("currentNumOfUsers Updated!");
+//						countDownLatch.countDown();
+//					}
+//				});
+//		try {
+//			// wait for firebase to saves record.
+//			countDownLatch.await();
+//		} catch (InterruptedException ex) {
+//			ex.printStackTrace();
+//		}
+//	}
 	@Override
 	public void setCurrentNumOfUsersRegisteredToCourse(String courseId, int newCurrentNumOfUsers) {
-		currentNumOfUsers = getCurrentNumOfUsersRegisteredToCourse(courseId);
 		currentNumOfUsers = newCurrentNumOfUsers;
 		CountDownLatch countDownLatch = new CountDownLatch(1);
 		this.childReference = databaseReference.child("Courses").child(courseId);
@@ -384,26 +417,31 @@ public class FireBaseMethods implements IFireBase {
 			ex.printStackTrace();
 		}
 	}
-
+	
 	@Override
 	public int getCurrentNumOfUsersRegisteredToCourse(String courseId) {
+
 		CountDownLatch countDownLatch = new CountDownLatch(1);
 		databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
 			@Override
 			public void onDataChange(DataSnapshot snapshot) {
 				currentNumOfUsers = Integer.parseInt(snapshot.child("Courses").child(courseId)
 						.child("currentNumOfUsersInCourse").getValue().toString());
+				System.err.println("currentNumOfUsers= " + currentNumOfUsers);
 				countDownLatch.countDown();
 			}
 
 			@Override
 			public void onCancelled(DatabaseError error) {
+
 				// TODO Auto-generated method stub
 			}
 		});
 		try {
+
 			// wait for firebase to saves record.
 			countDownLatch.await();
+
 			return currentNumOfUsers;
 		} catch (InterruptedException ex) {
 			ex.printStackTrace();
@@ -414,6 +452,7 @@ public class FireBaseMethods implements IFireBase {
 	@Override
 	public void deleteUserFromCourse(String courseId, String userId) {
 		this.childReference = databaseReference.child("Courses").child(courseId).child("registered").child(userId);
+		//setCurrentNumOfUsersRegisteredToCourse(courseId, '-');
 		childReference.removeValueAsync();
 	}
 
@@ -434,7 +473,9 @@ public class FireBaseMethods implements IFireBase {
 
 					@Override
 					public void onComplete(DatabaseError error, DatabaseReference ref) {
+						
 						System.out.println("User is added to waiting list!");
+						
 					}
 				});
 				countDownLatch.countDown();
