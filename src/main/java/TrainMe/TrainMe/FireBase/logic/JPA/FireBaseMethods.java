@@ -54,6 +54,7 @@ public class FireBaseMethods implements IFireBase {
 	private boolean generalFlag;
 	private List<CourseEntity> courseList;
 	private List<TrainerEntity> trainerList;
+	private List<GeneralCourseEntity> generalCourseList;
 	private UsersEntity myUser;
 
 	@PostConstruct
@@ -77,6 +78,7 @@ public class FireBaseMethods implements IFireBase {
 		this.generalFlag = false;
 		this.courseList = new ArrayList<>();
 		this.trainerList = new ArrayList<>();
+		this.generalCourseList = new ArrayList<>();
 	}
 
 	@Override
@@ -675,7 +677,6 @@ public class FireBaseMethods implements IFireBase {
 
 	@Override
 	public List<TrainerEntity> getAllTrainers() {
-		System.err.println("In get all");
 		CountDownLatch countDownLatch = new CountDownLatch(1);
 		this.childReference = databaseReference.child("Trainers");
 		this.childReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -758,8 +759,66 @@ public class FireBaseMethods implements IFireBase {
 		int t = 60; // all the Courses is 1 hour
 		calories = (int) ((0.4472 * avgHR - 0.05741 * w + 0.074 * age - 20.4022) * t / 4.184);
 		if (user.getGender().equals("M")) {
-			calories = (int) ((int)calories * 1.54);
+			calories = (int) ((int) calories * 1.54);
 		}
-			return calories;
+		return calories;
+	}
+
+	@Override
+	public List<GeneralCourseEntity> getAllGeneralCourses() {
+		CountDownLatch countDownLatch = new CountDownLatch(1);
+		this.childReference = databaseReference.child("GeneralCourses");
+		this.childReference.addListenerForSingleValueEvent(new ValueEventListener() {
+
+			@Override
+			public void onDataChange(DataSnapshot snapshot) {
+				if (snapshot.exists()) {
+					generalCourseList.clear();
+					for (DataSnapshot ds : snapshot.getChildren()) {
+						GeneralCourseEntity generalCourseEntity = ds.getValue(GeneralCourseEntity.class);
+						generalCourseList.add(generalCourseEntity);
+					}
+				}
+				countDownLatch.countDown();
+			}
+
+			@Override
+			public void onCancelled(DatabaseError error) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+		try {
+			countDownLatch.await();
+			return this.generalCourseList;
+		} catch (InterruptedException ex) {
+			ex.printStackTrace();
+			return null;
+		}
+	}
+	@Override
+	public void getByTrainerId(String trainertId) {
+//		CountDownLatch countDownLatch = new CountDownLatch(1);
+//		databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+//			@Override
+//			public void onDataChange(DataSnapshot snapshot) {
+//				currentNumOfUsers = Integer.parseInt(snapshot.child("Courses").child(courseId)
+//						.child("currentNumOfUsersInCourse").getValue().toString());
+//				countDownLatch.countDown();
+//			}
+//
+//			@Override
+//			public void onCancelled(DatabaseError error) {
+//				// TODO Auto-generated method stub
+//			}
+//		});
+//		try {
+//			// wait for firebase to saves record.
+//			countDownLatch.await();
+//			return currentNumOfUsers;
+//		} catch (InterruptedException ex) {
+//			ex.printStackTrace();
+//			return -1;
+//		}
 	}
 }

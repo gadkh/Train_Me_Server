@@ -1,5 +1,7 @@
 package TrainMe.TrainMe.logic.JPA;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,5 +28,8 @@ public class JPAGeneralCourseService implements GeneralCourseService {
 		this.firebaseService.deleteByGeneralCourseName(generalCourseName);
 	}
 
-	
+	@Override
+	public List<GeneralCourseEntity> getAllGeneralCourses() {
+		return this.firebaseService.getAllGeneralCourses();
+	}
 }
