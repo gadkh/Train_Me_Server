@@ -13,12 +13,14 @@ public interface IFireBase {
 	public List<TrainerEntity> getAllTrainers();
 	public void deleteByTrainer(TrainerEntity trainetToDelete);
 	public void deleteByTrainerId(String trainertId);
+	public void getByTrainerId(String trainertId);
 	
 	/**General Course Methods**/
 	public GeneralCourseEntity addGeneralCourse(GeneralCourseEntity generalCourseEntity);
 	public GeneralCourseEntity updateGeneralCourse(GeneralCourseEntity generalCourseEntity);
 	public void deleteByGeneralCourseName(String generalCourseName);
-
+	public List<GeneralCourseEntity> getAllGeneralCourses();
+	
 	/**User Methods**/
 	public UsersEntity addUser(UsersEntity userEntity);
 	public void deleteByUserId(String userId);
