@@ -12,6 +12,7 @@ public class UserInCourse {
 	private UsersEntity user;
 	private int hrAVG;
 	private List<Integer> hrlist;
+	private int calories;
 	private int rate;
 	private boolean isDatePassed;
 	private boolean isOnWaitingList;
@@ -94,5 +95,14 @@ public class UserInCourse {
 	public void setFull(boolean isFull) {
 		this.isFull = isFull;
 	}
+
+	public int getCalories() {
+		return calories;
+	}
+
+	public void setCalories(int calories) {
+		this.calories = calories;
+	}
+	
 	
 }
