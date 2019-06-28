@@ -367,38 +367,6 @@ public class FireBaseMethods implements IFireBase {
 		}
 	}
 
-//	@Override
-//	public void setCurrentNumOfUsersRegisteredToCourse(String courseId,int newInt) {// char sign) {
-//		System.err.println("In setCurrentNumOfUsersRegisteredToCourse");
-//		CountDownLatch countDownLatch = new CountDownLatch(1);
-//		
-//		currentNumOfUsers = getCurrentNumOfUsersRegisteredToCourse(courseId);
-//		System.err.println("AFTER GET");
-//
-////		if(sign=='+') {
-////			System.err.println("In if(sign=='+')");
-////			currentNumOfUsers++;
-////		}else {
-////			System.err.println("In ELSE if(sign=='+')");
-////			currentNumOfUsers--;
-////		}
-//		currentNumOfUsers = newInt;
-//		this.childReference = databaseReference.child("Courses").child(courseId);
-//		childReference.child("currentNumOfUsersInCourse").setValue(String.valueOf(currentNumOfUsers),
-//				new CompletionListener() {
-//					@Override
-//					public void onComplete(DatabaseError error, DatabaseReference ref) {
-//						System.out.println("currentNumOfUsers Updated!");
-//						countDownLatch.countDown();
-//					}
-//				});
-//		try {
-//			// wait for firebase to saves record.
-//			countDownLatch.await();
-//		} catch (InterruptedException ex) {
-//			ex.printStackTrace();
-//		}
-//	}
 	@Override
 	public void setCurrentNumOfUsersRegisteredToCourse(String courseId, int newCurrentNumOfUsers) {
 		currentNumOfUsers = newCurrentNumOfUsers;
@@ -655,7 +623,6 @@ public class FireBaseMethods implements IFireBase {
 			map.put("hrList", hrList);
 		}
 		int c = calculateCalories(avg, userId);
-		System.err.println("C " + c);
 		map.put("calories", c);
 		this.childReference = databaseReference.child("Courses").child(courseId).child("registered").child(userId);
 		childReference.child("HR").setValue(map, new CompletionListener() {
