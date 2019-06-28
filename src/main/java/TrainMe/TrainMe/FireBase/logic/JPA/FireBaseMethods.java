@@ -54,8 +54,10 @@ public class FireBaseMethods implements IFireBase {
 	private boolean generalFlag;
 	private List<CourseEntity> courseList;
 	private List<TrainerEntity> trainerList;
+	private List<GeneralCourseEntity> generalCourseList;
 	private UsersEntity myUser;
-
+	private CourseEntity myCourse;
+	
 	@PostConstruct
 	public void configure() {
 		try {
@@ -77,6 +79,7 @@ public class FireBaseMethods implements IFireBase {
 		this.generalFlag = false;
 		this.courseList = new ArrayList<>();
 		this.trainerList = new ArrayList<>();
+		this.generalCourseList = new ArrayList<>();
 	}
 
 	@Override
@@ -365,38 +368,7 @@ public class FireBaseMethods implements IFireBase {
 		}
 	}
 
-//	@Override
-//	public void setCurrentNumOfUsersRegisteredToCourse(String courseId,int newInt) {// char sign) {
-//		System.err.println("In setCurrentNumOfUsersRegisteredToCourse");
-//		CountDownLatch countDownLatch = new CountDownLatch(1);
-//		
-//		currentNumOfUsers = getCurrentNumOfUsersRegisteredToCourse(courseId);
-//		System.err.println("AFTER GET");
-//
-////		if(sign=='+') {
-////			System.err.println("In if(sign=='+')");
-////			currentNumOfUsers++;
-////		}else {
-////			System.err.println("In ELSE if(sign=='+')");
-////			currentNumOfUsers--;
-////		}
-//		currentNumOfUsers = newInt;
-//		this.childReference = databaseReference.child("Courses").child(courseId);
-//		childReference.child("currentNumOfUsersInCourse").setValue(String.valueOf(currentNumOfUsers),
-//				new CompletionListener() {
-//					@Override
-//					public void onComplete(DatabaseError error, DatabaseReference ref) {
-//						System.out.println("currentNumOfUsers Updated!");
-//						countDownLatch.countDown();
-//					}
-//				});
-//		try {
-//			// wait for firebase to saves record.
-//			countDownLatch.await();
-//		} catch (InterruptedException ex) {
-//			ex.printStackTrace();
-//		}
-//	}
+
 	@Override
 	public void setCurrentNumOfUsersRegisteredToCourse(String courseId, int newCurrentNumOfUsers) {
 		currentNumOfUsers = newCurrentNumOfUsers;
@@ -607,11 +579,77 @@ public class FireBaseMethods implements IFireBase {
 		return this.addGeneralCourse(generalCourseEntity);
 	}
 
-	
+	@Override
+	public void writeHr(CourseEntity courseEntite, String userId, List<Integer> hrList) {
+		
+		CountDownLatch countDownLatch = new CountDownLatch(1);
+		// System.err.println(getUserById(userId).getGender());
+		Map map = new HashMap<String, Object>();
+		int avg = 0;
+		if (hrList.size() >= 30) {
+			int size = 30;
+			int hrListNewSize = hrList.size() / size;
+			int k = 0;
+			Integer arr[] = new Integer[size];
+			for (int i = 0; i < size; i++) {
+				int avgIn = 0;
+				boolean flag = true;
+				for (int j = 0; j < hrListNewSize && flag == true; j++) {
+					avgIn += hrList.get(k);
+					k++;
+					if (k >= hrList.size()) {
+						flag = false;
+					}
+				}
+				if (flag == false) {
+					int temp = hrList.size() - (hrListNewSize * size);
+					avgIn = avgIn / temp;
+				} else {
+					avgIn = avgIn / hrListNewSize;
+				}
+				arr[i] = avgIn;
+			}
+			for (int i = 0; i < size; i++) {
+				avg += arr[i];
+			}
+			avg = avg / size;
+			List<Integer> list = Arrays.asList(arr);
+
+			map.put("HR_avg", avg);
+			map.put("hrList", list);
+		} else {
+			for (int i = 0; i < hrList.size(); i++) {
+				avg += hrList.get(i);
+			}
+			avg = avg / hrList.size();
+			map.put("HR_avg", avg);
+			map.put("hrList", hrList);
+		}
+		int c = calculateCalories(avg, userId);
+		System.err.println("C " + c);
+		map.put("calories", c);
+		map.put("date", courseEntite.getDate());
+		map.put("courseName", courseEntite.getCourseName());
+		this.childReference = databaseReference.child("Graphs").child(userId).child(courseEntite.getCourseId());
+		childReference.setValue(map, new CompletionListener() {
+
+			@Override
+			public void onComplete(DatabaseError error, DatabaseReference ref) {
+				System.out.println("Record saved!");
+				countDownLatch.countDown();
+			}
+		});
+
+		try {
+			// wait for firebase to saves record.
+			countDownLatch.await();
+		} catch (InterruptedException ex) {
+			ex.printStackTrace();
+		}
+	}
 
 	@Override
 	public List<TrainerEntity> getAllTrainers() {
-		System.err.println("In get all");
 		CountDownLatch countDownLatch = new CountDownLatch(1);
 		this.childReference = databaseReference.child("Trainers");
 		this.childReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -663,6 +701,7 @@ public class FireBaseMethods implements IFireBase {
 					myUser.setGender(gender);
 					myUser.setAge(age);
 					myUser.setWeigh(weigh);
+					myUser.setUserId(id);
 					System.err.println(myUser);
 				}
 				countDownLatch.countDown();
@@ -694,26 +733,93 @@ public class FireBaseMethods implements IFireBase {
 		int t = 60; // all the Courses is 1 hour
 		calories = (int) ((0.4472 * avgHR - 0.05741 * w + 0.074 * age - 20.4022) * t / 4.184);
 		if (user.getGender().equals("M")) {
-			calories = (int) ((int)calories * 1.54);
+			calories = (int) ((int) calories * 1.54);
 		}
-			return calories;
+		return calories;
 	}
 
 	@Override
 	public List<GeneralCourseEntity> getAllGeneralCourses() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		CountDownLatch countDownLatch = new CountDownLatch(1);
+		this.childReference = databaseReference.child("GeneralCourses");
+		this.childReference.addListenerForSingleValueEvent(new ValueEventListener() {
 
-	@Override
-	public void writeHr(CourseEntity courseEntite, String userId, List<Integer> hrList) {
-		// TODO Auto-generated method stub
-		
-	}
+			@Override
+			public void onDataChange(DataSnapshot snapshot) {
+				if (snapshot.exists()) {
+					generalCourseList.clear();
+					for (DataSnapshot ds : snapshot.getChildren()) {
+						GeneralCourseEntity generalCourseEntity = ds.getValue(GeneralCourseEntity.class);
+						generalCourseList.add(generalCourseEntity);
+					}
+				}
+				countDownLatch.countDown();
+			}
 
+			@Override
+			public void onCancelled(DatabaseError error) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+		try {
+			countDownLatch.await();
+			return this.generalCourseList;
+		} catch (InterruptedException ex) {
+			ex.printStackTrace();
+			return null;
+		}
+	}
 	@Override
 	public CourseEntity getCourseById(String courseId) {
-		// TODO Auto-generated method stub
-		return null;
+		System.err.println("in Start getCourseById");
+
+		CountDownLatch countDownLatch = new CountDownLatch(1);
+		this.childReference = databaseReference.child("Courses").child(courseId);
+		this.childReference.addListenerForSingleValueEvent(new ValueEventListener() {
+
+			@Override
+			public void onDataChange(DataSnapshot snapshot) {
+				if (snapshot.exists()) {
+					
+					String courseLocation = snapshot.child("courseLocation").getValue().toString();
+					String courseName = snapshot.child("courseName").getValue().toString();
+					String currentNumOfUsersInCourse = snapshot.child("currentNumOfUsersInCourse").getValue().toString();
+					String date = snapshot.child("date").getValue().toString();
+					String maxNumOfUsersInCourse = snapshot.child("maxNumOfUsersInCourse").getValue().toString();
+					String time = snapshot.child("time").getValue().toString();
+					String trainerId = snapshot.child("trainerId").getValue().toString();
+					String trainerName = snapshot.child("trainerName").getValue().toString();
+					myCourse=new CourseEntity();
+					myCourse.setCourseId(courseId);
+					myCourse.setCourseName(courseName);
+					myCourse.setCurrentNumOfUsersInCourse(currentNumOfUsersInCourse);
+					myCourse.setDate(date);
+					myCourse.setMaxNumOfUsersInCourse(maxNumOfUsersInCourse);
+					myCourse.setTime(time);
+					myCourse.setCourseLocation(courseLocation);
+					myCourse.setTrainerId(trainerId);
+					myCourse.setTrainerName(trainerName);
+					
+					System.err.println(myCourse);
+				}
+				countDownLatch.countDown();
+			}
+
+			@Override
+			public void onCancelled(DatabaseError error) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+		try {
+			countDownLatch.await();
+			System.err.println("in end getCourseById");
+
+			return this.myCourse;
+		} catch (InterruptedException ex) {
+			ex.printStackTrace();
+			return null;
+		}
 	}
 }
