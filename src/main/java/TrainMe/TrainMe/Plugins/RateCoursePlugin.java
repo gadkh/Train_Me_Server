@@ -28,7 +28,9 @@ public class RateCoursePlugin implements TrainMePlugins {
 		UserInCourse userInCourse=new UserInCourse();
 		try {
 			userInCourse = this.jackson.readValue(activityEntity.getAttributesJson(), UserInCourse.class);
-			this.firebaseService.rateCourse(userInCourse.getCourseEntity().getCourseId(), userInCourse.getUser().getUserId(), userInCourse.getRate());
+			userInCourse.setCourseEntity(this.firebaseService.getCourseById(userInCourse.getCourseEntity().getCourseId()));
+			System.err.println(userInCourse.getCourseEntity().getCourseId()+" "+userInCourse.getCourseEntity().getCourseName() +" "+userInCourse.getUser().getUserId()+" " +userInCourse.getRate());
+			this.firebaseService.rateCourse(userInCourse.getCourseEntity().getCourseId(),userInCourse.getCourseEntity().getCourseName() ,userInCourse.getUser().getUserId(), userInCourse.getRate());
 			return userInCourse;
 		} catch (IOException e) {
 			throw new RuntimeException(e);		

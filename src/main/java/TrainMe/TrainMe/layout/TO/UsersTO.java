@@ -8,18 +8,20 @@ public class UsersTO {
 	private String gender;
 	private String userId;
 	private String weigh;
-
+	private long userNumber;
+	
 	public UsersTO() {
 		super();
 	}
 
-	public UsersTO(String fullName, String age, String gender, String userId, String weigh) {
+	public UsersTO(String fullName, String age, String gender, String userId, String weigh,long userNumber) {
 		super();
 		this.fullName = fullName;
 		this.age = age;
 		this.gender = gender;
 		this.userId = userId;
 		this.weigh = weigh;
+		this.userNumber=userNumber;
 	}
 
 	public UsersTO(UsersEntity userEntity) {
@@ -28,6 +30,7 @@ public class UsersTO {
 		this.age=userEntity.getAge();
 		this.userId=userEntity.getUserId();
 		this.weigh=userEntity.getWeigh();
+		this.userNumber=userEntity.getUserNumber();
 	}
 
 	public String getFullName() {
@@ -70,6 +73,16 @@ public class UsersTO {
 		this.weigh = weigh;
 	}
 	
+	
+	
+	public long getUserNumber() {
+		return userNumber;
+	}
+
+	public void setUserNumber(long userNumber) {
+		this.userNumber = userNumber;
+	}
+
 	public UsersEntity toEntity()
 	{
 		UsersEntity userEntity=new UsersEntity();
@@ -78,6 +91,7 @@ public class UsersTO {
 		userEntity.setAge(this.age);
 		userEntity.setUserId(this.userId);
 		userEntity.setWeigh(this.weigh);
+		userEntity.setUserNumber(userNumber);
 		return userEntity;
 	}
 }

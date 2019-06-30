@@ -25,7 +25,10 @@ public class CourseAPI {
 	@RequestMapping(method = RequestMethod.POST, path = "/trainme/course", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@CrossOrigin(origins = "*")
 	public CourseTO addCourse(@RequestBody CourseTO courseTo) {
+		System.err.println("Course To trainerNum "+courseTo.getTrainer().getTrainerNum());
 		CourseEntity courseEntity = courseTo.toEntity();
+		System.err.println("Course Entity trainerNum "+courseEntity.getTrainerNumber());
+
 		this.courseService.saveCourse(courseEntity);
 		return new CourseTO(courseEntity);
 	}
