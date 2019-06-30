@@ -6,18 +6,20 @@ public class UsersEntity {
 	private String gender;
 	private String userId;
 	private String weigh;
+	private long userNumber;
 	
 	public UsersEntity() {
 		super();
 	}
 
-	public UsersEntity(String fullName, String age, String gender, String userId, String weigh) {
+	public UsersEntity(String fullName, String age, String gender, String userId, String weigh,long userNumber) {
 		super();
 		this.fullName = fullName;
 		this.age = age;
 		this.gender = gender;
 		this.userId = userId;
 		this.weigh = weigh;
+		this.userNumber=userNumber;
 	}
 
 	public String getFullName() {
@@ -59,7 +61,12 @@ public class UsersEntity {
 	public void setWeigh(String weigh) {
 		this.weigh = weigh;
 	}
-	
-	
 
+	public long getUserNumber() {
+		return userNumber;
+	}
+
+	public void setUserNumber(long userNumber) {
+		this.userNumber = userNumber;
+	}
 }

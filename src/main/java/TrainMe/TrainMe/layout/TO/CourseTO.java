@@ -14,6 +14,7 @@ public class CourseTO {
     private String maxNumOfUsersInCourse;
     private String date;
     private String courseId;
+    private long courseNum;
     
 	public CourseTO() {
 		super();
@@ -26,16 +27,18 @@ public class CourseTO {
 		this.trainer=new TrainerTO();
 		this.trainer.setName(courseEntity.getTrainerName());
 		this.trainer.setId(courseEntity.getTrainerId());
+		this.trainer.setTrainerNum(courseEntity.getTrainerNumber());
 		this.time=courseEntity.getTime();
 		this.currentNumOfUsersInCourse=courseEntity.getCurrentNumOfUsersInCourse();
 		this.courseLocation=courseEntity.getCourseLocation();
 		this.maxNumOfUsersInCourse=courseEntity.getMaxNumOfUsersInCourse();
 		this.date=courseEntity.getDate();
 		this.courseId=courseEntity.getCourseId();
+		this.courseNum=courseEntity.getCourseNum();
 	}
 
 	public CourseTO(String courseName, TrainerTO trainer, String time, String currentNumOfUsersInCourse,
-			String courseLocation, String maxNumOfUsersInCourse, String date,String courseId) {
+			String courseLocation, String maxNumOfUsersInCourse, String date,String courseId, long courseNum) {
 		super();
 		this.courseName = courseName;
 		this.trainer = trainer;
@@ -45,6 +48,7 @@ public class CourseTO {
 		this.maxNumOfUsersInCourse = maxNumOfUsersInCourse;
 		this.date = date;
 		this.courseId=courseId;
+		this.courseNum=courseNum;
 	}
 
 	public String getCourseName() {
@@ -111,6 +115,15 @@ public class CourseTO {
 	public void setCourseId(String courseId) {
 		this.courseId = courseId;
 	}
+	
+
+	public long getCourseNum() {
+		return courseNum;
+	}
+
+	public void setCourseNum(long courseNum) {
+		this.courseNum = courseNum;
+	}
 
 	public CourseEntity toEntity()
 	{
@@ -118,12 +131,14 @@ public class CourseTO {
 		courseEntity.setCourseName(this.courseName);
 		courseEntity.setTrainerName(this.trainer.getName());
 		courseEntity.setTrainerId(this.trainer.getId());
+		courseEntity.setTrainerNumber(this.trainer.getTrainerNum());
 		courseEntity.setTime(this.time);
 		courseEntity.setCurrentNumOfUsersInCourse(this.currentNumOfUsersInCourse);
 		courseEntity.setCourseLocation(this.courseLocation);
 		courseEntity.setMaxNumOfUsersInCourse(this.maxNumOfUsersInCourse);
+		courseEntity.setCourseNum(this.courseNum);
 		courseEntity.setDate(this.date);
-
+		
 		//Create Course ID
 		Calendar calendar=Calendar.getInstance();
 		SimpleDateFormat currentTimeToString = new SimpleDateFormat("HH:mm:ss:SSS");
