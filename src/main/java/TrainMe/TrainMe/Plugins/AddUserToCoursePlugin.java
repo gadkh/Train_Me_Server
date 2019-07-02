@@ -26,7 +26,7 @@ public class AddUserToCoursePlugin implements TrainMePlugins {
 	}
 	
 	@Override
-	public Object invokeAction(ActivityEntity activityEntity) {
+	public Object invokeAction(ActivityEntity activityEntity)  {
 		UserInCourse addUserToCourse = new UserInCourse();
 		try {
 			addUserToCourse = this.jackson.readValue(activityEntity.getAttributesJson(), UserInCourse.class);

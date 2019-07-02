@@ -1,7 +1,9 @@
 package TrainMe.TrainMe.FireBase.logic.JPA;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,12 +15,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.processing.Completion;
 
+import org.apache.mahout.cf.taste.common.TasteException;
+import org.apache.mahout.cf.taste.impl.model.file.FileDataModel;
+import org.apache.mahout.cf.taste.impl.neighborhood.ThresholdUserNeighborhood;
+import org.apache.mahout.cf.taste.impl.recommender.GenericUserBasedRecommender;
+import org.apache.mahout.cf.taste.impl.similarity.PearsonCorrelationSimilarity;
+import org.apache.mahout.cf.taste.model.DataModel;
+import org.apache.mahout.cf.taste.neighborhood.UserNeighborhood;
+import org.apache.mahout.cf.taste.recommender.RecommendedItem;
+import org.apache.mahout.cf.taste.recommender.UserBasedRecommender;
+import org.apache.mahout.cf.taste.similarity.UserSimilarity;
 import org.springframework.stereotype.Service;
 
 import com.google.auth.oauth2.GoogleCredentials;
@@ -35,15 +44,19 @@ import com.google.firebase.database.ValueEventListener;
 import TrainMe.TrainMe.FireBase.logic.IFireBase;
 import TrainMe.TrainMe.logic.entity.CourseEntity;
 import TrainMe.TrainMe.logic.entity.GeneralCourseEntity;
+import TrainMe.TrainMe.logic.entity.RecommendationEntity;
 import TrainMe.TrainMe.logic.entity.TrainerEntity;
 import TrainMe.TrainMe.logic.entity.UsersEntity;
 
 @Service
+
 public class FireBaseMethods implements IFireBase {
 	private FirebaseOptions options;
 	private FileInputStream serviceAccount;
 	private String fileName = "src/main/resources/train-e0fc2-firebase-adminsdk-zm1mf-f441dd4bd4.json";
-
+	private boolean transfer=true;
+	private boolean transfer2=true;
+	private boolean transfer3=true;
 	private FirebaseDatabase database;
 	private DatabaseReference ref;
 	private DatabaseReference databaseReference;
@@ -426,30 +439,37 @@ public class FireBaseMethods implements IFireBase {
 		}
 	}
 
+	
 	@Override
-	public synchronized UsersEntity addUserToCourse(String courseId, UsersEntity userEntity) {
+	public  UsersEntity addUserToCourse(String courseId, UsersEntity userEntity)  {
 		this.childReference = databaseReference.child("Courses").child(courseId);
 		CountDownLatch countDownLatch = new CountDownLatch(1);
-
-		// Map map = new HashMap<String, Object>();
-
+		
 		Map map = new HashMap<String, Object>();
 		map.put("user", userEntity);
 		
 		
 		childReference.child("registered").child(userEntity.getUserId()).setValue(map, new CompletionListener() {
-
+			
+			//setCurrentNumOfUsersRegisteredToCourse(courseId,current+1);
 			@Override
 			public void onComplete(DatabaseError error, DatabaseReference ref) {
-				System.out.println("Record saved!");
-				//setCurrentNumOfUsersRegisteredToCourse(courseId, '+');
+				
+				System.out.println("user added to course");
 				countDownLatch.countDown();
 			}
 		});
-
 		try {
 			// wait for firebase to saves record.
 			countDownLatch.await();
+			int current=getCurrentNumOfUsersRegisteredToCourse(courseId);
+			setCurrentNumOfUsersRegisteredToCourse(courseId,current);
+			try {
+				getRecommendations(userEntity.getUserId());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return userEntity;
 		} catch (InterruptedException ex) {
 			ex.printStackTrace();
@@ -457,37 +477,66 @@ public class FireBaseMethods implements IFireBase {
 		}
 	}
 
-
+	
 	@Override
-	public void setCurrentNumOfUsersRegisteredToCourse(String courseId, int newCurrentNumOfUsers) {
-		currentNumOfUsers = newCurrentNumOfUsers;
+	public  void  setCurrentNumOfUsersRegisteredToCourse(String courseId, int newCurrentNumOfUsers) {
 		CountDownLatch countDownLatch = new CountDownLatch(1);
-		this.childReference = databaseReference.child("Courses").child(courseId);
-		childReference.child("currentNumOfUsersInCourse").setValue(String.valueOf(currentNumOfUsers),
-				new CompletionListener() {
-					@Override
-					public void onComplete(DatabaseError error, DatabaseReference ref) {
-						countDownLatch.countDown();
-					}
-				});
+//		this.childReference = databaseReference.child("Courses").child(courseId);	
+//		childReference.child("currentNumOfUsersInCourse").setValue(String.valueOf(currentNumOfUsers),
+//				new CompletionListener() {
+//					@Override
+//					public void onComplete(DatabaseError error, DatabaseReference ref) {
+//						currentNumOfUsers = newCurrentNumOfUsers;
+//						countDownLatch.countDown();
+//					}
+//				});
+	databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+		
+		@Override
+		public void onDataChange(DataSnapshot snapshot) {
+			String strNewCurrentNumOfUsers=""+newCurrentNumOfUsers;
+			snapshot.child("Courses").child(courseId).child("currentNumOfUsersInCourse").getRef()
+			.setValue(strNewCurrentNumOfUsers, new CompletionListener() {
+				
+				@Override
+				public void onComplete(DatabaseError error, DatabaseReference ref) {
+					countDownLatch.countDown();
+					
+				}
+			});
+		}
+		
+		@Override
+		public void onCancelled(DatabaseError error) {
+			// TODO Auto-generated method stub
+			
+		}
+	});
 		try {
 			// wait for firebase to saves record.
 			countDownLatch.await();
 		} catch (InterruptedException ex) {
 			ex.printStackTrace();
 		}
-	}
+		}	
 	
 	@Override
-	public int getCurrentNumOfUsersRegisteredToCourse(String courseId) {
+	public  int getCurrentNumOfUsersRegisteredToCourse(String courseId) {
 
 		CountDownLatch countDownLatch = new CountDownLatch(1);
+		
 		databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
 			@Override
 			public void onDataChange(DataSnapshot snapshot) {
-				currentNumOfUsers = Integer.parseInt(snapshot.child("Courses").child(courseId)
-						.child("currentNumOfUsersInCourse").getValue().toString());
-				countDownLatch.countDown();
+				try {
+					currentNumOfUsers = (int) snapshot.child("Courses").child(courseId)
+							.child("registered").getChildrenCount();
+							//.child("currentNumOfUsersInCourse").getValue().toString());
+					countDownLatch.countDown();
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				
 			}
 
 			@Override
@@ -500,7 +549,6 @@ public class FireBaseMethods implements IFireBase {
 
 			// wait for firebase to saves record.
 			countDownLatch.await();
-
 			return currentNumOfUsers;
 		} catch (InterruptedException ex) {
 			ex.printStackTrace();
@@ -513,6 +561,8 @@ public class FireBaseMethods implements IFireBase {
 		this.childReference = databaseReference.child("Courses").child(courseId).child("registered").child(userId);
 		//setCurrentNumOfUsersRegisteredToCourse(courseId, '-');
 		childReference.removeValueAsync();
+		int current=getCurrentNumOfUsersRegisteredToCourse(courseId);
+		setCurrentNumOfUsersRegisteredToCourse(courseId, current);
 	}
 
 	@Override
@@ -561,6 +611,7 @@ public class FireBaseMethods implements IFireBase {
 
 	@Override
 	public void rateCourse(String courseId, String courseName, String userId, int rate) {
+		RecommendationEntity recommendation=new RecommendationEntity();
 		this.childReference = databaseReference.child("Rate").child(userId);
 		CountDownLatch countDownLatch = new CountDownLatch(2);
 		UsersEntity userEntity=getUserById(userId);
@@ -569,20 +620,15 @@ public class FireBaseMethods implements IFireBase {
 		
 			@Override
 			public void onDataChange(DataSnapshot snapshot) {
-				snapshot.child("userNumber").getRef().setValue(userEntity.getUserNumber(),new CompletionListener() {
-					
-					@Override
-					public void onComplete(DatabaseError error, DatabaseReference ref) {
-						countDownLatch.countDown();	
-
-					}
-				});
-				Map map = new HashMap<String, Object>();
-				map.put("rate", rate);
-				map.put("courseName", courseEntity.getCourseName());
-				map.put("trainerName", courseEntity.getTrainerName());
-				map.put("courseNumber", courseEntity.getCourseNum());
-				snapshot.child("Courses").child(""+courseEntity.getCourseNum()).getRef().setValue(map, new CompletionListener() {
+				
+				recommendation.setCourseName(courseEntity.getCourseName());
+				recommendation.setRate(rate);
+				recommendation.setTrainerName(courseEntity.getTrainerName());
+				recommendation.setUserId(userId);
+				recommendation.setCourseNumber(courseEntity.getCourseNum());
+				recommendation.setUserNumber(userEntity.getUserNumber());
+				
+				snapshot.child(""+courseEntity.getCourseNum()).getRef().setValue(recommendation, new CompletionListener() {
 					
 					@Override
 					public void onComplete(DatabaseError error, DatabaseReference ref) {
@@ -904,5 +950,97 @@ public class FireBaseMethods implements IFireBase {
 			ex.printStackTrace();
 			return null;
 		}
+	}
+	
+	@Override
+	public void getRecommendations(String userId) throws IOException {
+		CountDownLatch countDownLatch = new CountDownLatch(1);
+		//UsersEntity usersEntity=getUserById(userId);
+		Map<String, ArrayList<RecommendationEntity>> userRecommendationMap=new HashMap();
+		databaseReference.child("Rate").addListenerForSingleValueEvent(new ValueEventListener() {
+			@Override
+			public void onDataChange(DataSnapshot snapshot) {
+				if (snapshot.exists()) {
+					courseList.clear();
+					for (DataSnapshot ds : snapshot.getChildren()) {
+						//System.err.println("1");
+						ArrayList<RecommendationEntity>recommendationList=new ArrayList();
+						for(DataSnapshot ds2 :ds.getChildren()){
+							RecommendationEntity recommendation=ds2.getValue(RecommendationEntity.class);
+							recommendationList.add(recommendation);
+						}
+						userRecommendationMap.put(recommendationList.get(0).getUserId(), recommendationList);
+					}
+				}
+				countDownLatch.countDown();
+			}
+			@Override
+			public void onCancelled(DatabaseError error) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+		try {
+			recomend();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.err.println("Fail");
+			e.printStackTrace();
+		}
+		//try {
+//			countDownLatch.await();
+			//FileWriter fw=writeToCsvFile(userRecommendationMap);
+//			DataModel model = new FileDataModel(new File("data/dataset1.csv"));
+//			UserSimilarity similarity;
+//			try {
+//				similarity = new PearsonCorrelationSimilarity(model);
+//				UserNeighborhood neighborhood = new ThresholdUserNeighborhood(0.1, similarity, model);
+//				UserBasedRecommender recommender = 
+//						new GenericUserBasedRecommender(model, neighborhood, similarity);
+//				List<RecommendedItem> recommendations = recommender.recommend(2, 2);
+//				for (RecommendedItem recommendation : recommendations) {
+//					  System.out.println(recommendation);
+//					}
+//			} catch (TasteException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			
+			
+			
+			//System.err.println(userRecommendationMap);
+		//} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+		//	e.printStackTrace();
+		//}
+	}
+	@Override
+	public FileWriter writeToCsvFile(Map<String, ArrayList<RecommendationEntity>> recomendationMap) throws IOException {
+		FileWriter writer = new FileWriter("data/dataset.csv");
+		for(Map.Entry<String, ArrayList<RecommendationEntity>> entry : recomendationMap.entrySet()) {
+		    //System.out.println(entry.getKey() + "/" + entry.getValue());
+			for(int i=0;i<entry.getValue().size();i++){
+				writer.write(""+ entry.getValue().get(i).getUserNumber()+",");
+				writer.write(""+ entry.getValue().get(i).getCourseNumber()+",");
+				writer.write(""+ entry.getValue().get(i).getRate());
+				writer.write("\n");
+			}
+		}
+		writer.flush();
+		writer.close();
+		return writer;
+	}
+	public void recomend() throws Exception
+	{
+		DataModel model = new FileDataModel(new File("data/dataset1.csv"));
+		UserSimilarity similarity;
+			similarity = new PearsonCorrelationSimilarity(model);
+			UserNeighborhood neighborhood = new ThresholdUserNeighborhood(0.1, similarity, model);
+			UserBasedRecommender recommender = 
+					new GenericUserBasedRecommender(model, neighborhood, similarity);
+			List<RecommendedItem> recommendations = recommender.recommend(2, 2);
+			for (RecommendedItem recommendation : recommendations) {
+				  System.out.println(recommendation);
+			}
 	}
 }

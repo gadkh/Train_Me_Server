@@ -1,9 +1,15 @@
 package TrainMe.TrainMe.FireBase.logic;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import TrainMe.TrainMe.logic.entity.CourseEntity;
 import TrainMe.TrainMe.logic.entity.GeneralCourseEntity;
+import TrainMe.TrainMe.logic.entity.RecommendationEntity;
 import TrainMe.TrainMe.logic.entity.TrainerEntity;
 import TrainMe.TrainMe.logic.entity.UsersEntity;
 
@@ -24,7 +30,7 @@ public interface IFireBase {
 	public UsersEntity addUser(UsersEntity userEntity);
 	public void deleteByUserId(String userId);
 	public boolean isUserRegistered(String courseId,String userId);
-	public UsersEntity addUserToCourse(String courseId, UsersEntity userEntity);
+	public UsersEntity addUserToCourse(String courseId, UsersEntity userEntity) throws IOException;
 	public UsersEntity joinToWaitingList(String courseId,UsersEntity userEntity);
 	public void deleteUserFromCourse(String courseId, String userId);
 	public void deleteUserFromWaitingList(String courseId, String userId);
@@ -46,4 +52,9 @@ public interface IFireBase {
 	public int calculateCalories(int avgHR,String userId); 
 	public CourseEntity getCourseById(String courseId);	
 	
+	/**Smart Algorithem
+	 * @throws IOException 
+	 * @throws Exception **/
+	public void getRecommendations(String userId) throws IOException;
+	public FileWriter writeToCsvFile(Map<String,ArrayList<RecommendationEntity>>recomendationMap) throws IOException;
 }
