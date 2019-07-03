@@ -18,7 +18,6 @@ import java.util.concurrent.CountDownLatch;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.mahout.cf.taste.common.TasteException;
 import org.apache.mahout.cf.taste.impl.model.file.FileDataModel;
 import org.apache.mahout.cf.taste.impl.neighborhood.ThresholdUserNeighborhood;
 import org.apache.mahout.cf.taste.impl.recommender.GenericUserBasedRecommender;
@@ -443,15 +442,28 @@ public class FireBaseMethods implements IFireBase {
 	@Override
 	public  UsersEntity addUserToCourse(String courseId, UsersEntity userEntity)  {
 		this.childReference = databaseReference.child("Courses").child(courseId);
-		CountDownLatch countDownLatch = new CountDownLatch(1);
-		
+		CountDownLatch countDownLatch = new CountDownLatch(2);
+		CourseEntity courseEntity=getCourseById(courseId);
 		Map map = new HashMap<String, Object>();
 		map.put("user", userEntity);
 		
+		Map userCoursesMap = new HashMap<String, Object>();
+		userCoursesMap.put("courseName",courseEntity.getCourseName());
+		userCoursesMap.put("time",courseEntity.getTime());
+		userCoursesMap.put("trainerName",courseEntity.getTrainerName());
+		userCoursesMap.put("date",courseEntity.getDate());
+		
+		databaseReference.child("UserCourses").child(userEntity.getUserId()).child(courseId).setValue(userCoursesMap,new CompletionListener() {
+			
+			@Override
+			public void onComplete(DatabaseError error, DatabaseReference ref) {
+				
+				countDownLatch.countDown();
+			}
+		});
 		
 		childReference.child("registered").child(userEntity.getUserId()).setValue(map, new CompletionListener() {
 			
-			//setCurrentNumOfUsersRegisteredToCourse(courseId,current+1);
 			@Override
 			public void onComplete(DatabaseError error, DatabaseReference ref) {
 				
@@ -561,6 +573,7 @@ public class FireBaseMethods implements IFireBase {
 		this.childReference = databaseReference.child("Courses").child(courseId).child("registered").child(userId);
 		//setCurrentNumOfUsersRegisteredToCourse(courseId, '-');
 		childReference.removeValueAsync();
+		databaseReference.child("UserCourses").child(userId).child(courseId).removeValueAsync();
 		int current=getCurrentNumOfUsersRegisteredToCourse(courseId);
 		setCurrentNumOfUsersRegisteredToCourse(courseId, current);
 	}
