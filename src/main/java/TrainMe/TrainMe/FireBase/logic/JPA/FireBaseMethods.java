@@ -464,12 +464,12 @@ public class FireBaseMethods implements IFireBase {
 			countDownLatch.await();
 			int current=getCurrentNumOfUsersRegisteredToCourse(courseId);
 			setCurrentNumOfUsersRegisteredToCourse(courseId,current);
-			try {
-				getRecommendations(userEntity.getUserId());
-			} catch (IOException e) {
+			//try {
+				//getRecommendations(userEntity.getUserId());
+		//	} catch (IOException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				//e.printStackTrace();
+			//}
 			return userEntity;
 		} catch (InterruptedException ex) {
 			ex.printStackTrace();
