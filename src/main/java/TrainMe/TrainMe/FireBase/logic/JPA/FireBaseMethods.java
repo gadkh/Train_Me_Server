@@ -571,7 +571,6 @@ public class FireBaseMethods implements IFireBase {
 	@Override
 	public void deleteUserFromCourse(String courseId, String userId) {
 		this.childReference = databaseReference.child("Courses").child(courseId).child("registered").child(userId);
-		//setCurrentNumOfUsersRegisteredToCourse(courseId, '-');
 		childReference.removeValueAsync();
 		databaseReference.child("UserCourses").child(userId).child(courseId).removeValueAsync();
 		int current=getCurrentNumOfUsersRegisteredToCourse(courseId);
@@ -591,6 +590,7 @@ public class FireBaseMethods implements IFireBase {
 						.valueOf(snapshot.child("Courses").child(courseId).child("waitingList").getChildrenCount() + 1);
 				Map map = new HashMap<String, Integer>();
 				map.put("position", pos);
+				map.put("token", userEntity.getToken());
 				childReference.setValue(map, new CompletionListener() {
 
 					@Override
