@@ -6,31 +6,44 @@ public class UsersTO {
 	private String fullName;
 	private String age;
 	private String gender;
+	private String token;
 	private String userId;
 	private String weigh;
 	private long userNumber;
-	
+
 	public UsersTO() {
 		super();
 	}
 
-	public UsersTO(String fullName, String age, String gender, String userId, String weigh,long userNumber) {
+	public UsersTO(String fullName, String age, String gender, String token, String userId, String weigh,
+			long userNumber) {
 		super();
 		this.fullName = fullName;
 		this.age = age;
 		this.gender = gender;
+		this.token = token;
 		this.userId = userId;
 		this.weigh = weigh;
-		this.userNumber=userNumber;
+		this.userNumber = userNumber;
 	}
 
 	public UsersTO(UsersEntity userEntity) {
-		this.fullName=userEntity.getFullName();
-		this.gender=userEntity.getGender();
-		this.age=userEntity.getAge();
-		this.userId=userEntity.getUserId();
-		this.weigh=userEntity.getWeigh();
-		this.userNumber=userEntity.getUserNumber();
+		this.fullName = userEntity.getFullName();
+		this.gender = userEntity.getGender();
+		this.age = userEntity.getAge();
+		this.token = userEntity.getToken();
+		this.userId = userEntity.getUserId();
+		this.weigh = userEntity.getWeigh();
+		this.userNumber = userEntity.getUserNumber();
+	}
+
+	
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 
 	public String getFullName() {
@@ -72,9 +85,7 @@ public class UsersTO {
 	public void setWeigh(String weigh) {
 		this.weigh = weigh;
 	}
-	
-	
-	
+
 	public long getUserNumber() {
 		return userNumber;
 	}
@@ -83,12 +94,12 @@ public class UsersTO {
 		this.userNumber = userNumber;
 	}
 
-	public UsersEntity toEntity()
-	{
-		UsersEntity userEntity=new UsersEntity();
+	public UsersEntity toEntity() {
+		UsersEntity userEntity = new UsersEntity();
 		userEntity.setFullName(this.fullName);
 		userEntity.setGender(this.gender);
 		userEntity.setAge(this.age);
+		userEntity.setToken(this.token);
 		userEntity.setUserId(this.userId);
 		userEntity.setWeigh(this.weigh);
 		userEntity.setUserNumber(userNumber);

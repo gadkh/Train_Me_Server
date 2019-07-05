@@ -6,20 +6,32 @@ public class UsersEntity {
 	private String gender;
 	private String userId;
 	private String weigh;
+	private String token;
 	private long userNumber;
 	
 	public UsersEntity() {
 		super();
 	}
 
-	public UsersEntity(String fullName, String age, String gender, String userId, String weigh,long userNumber) {
+	public UsersEntity(String fullName, String age, String gender,String token, String userId, String weigh,long userNumber) {
 		super();
 		this.fullName = fullName;
 		this.age = age;
 		this.gender = gender;
+		this.token = token;
 		this.userId = userId;
 		this.weigh = weigh;
 		this.userNumber=userNumber;
+	}
+	
+	
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 
 	public String getFullName() {
