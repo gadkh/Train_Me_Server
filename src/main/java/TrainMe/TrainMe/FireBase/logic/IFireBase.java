@@ -8,7 +8,10 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import TrainMe.TrainMe.logic.entity.CourseEntity;
+import TrainMe.TrainMe.logic.entity.CourseRateEntity;
 import TrainMe.TrainMe.logic.entity.GeneralCourseEntity;
+import TrainMe.TrainMe.logic.entity.GraphsEntity;
+import TrainMe.TrainMe.logic.entity.RateEntity;
 import TrainMe.TrainMe.logic.entity.RecommendationEntity;
 import TrainMe.TrainMe.logic.entity.TrainerEntity;
 import TrainMe.TrainMe.logic.entity.UsersEntity;
@@ -32,10 +35,11 @@ public interface IFireBase {
 	public boolean isUserRegistered(String courseId,String userId);
 	public UsersEntity addUserToCourse(String courseId, UsersEntity userEntity) throws IOException;
 	public UsersEntity joinToWaitingList(String courseId,UsersEntity userEntity);
-	public void deleteUserFromCourse(String courseId, String userId);
+	public void deleteUserFromCourse(String courseId, String userId, String courseName);
 	public void deleteUserFromWaitingList(String courseId, String userId);
 	public UsersEntity updateUser(UsersEntity newUser);
 	public UsersEntity getUserById(String id);
+	public List<UsersEntity> getAllUsers();
 	
 	
 	/**Course Methods**/
@@ -51,10 +55,23 @@ public interface IFireBase {
 	public List<CourseEntity>getCoursesByDate(String date);
 	public int calculateCalories(int avgHR,String userId); 
 	public CourseEntity getCourseById(String courseId);	
+	void deleteWaitingList(String courseId);
+	public CourseRateEntity getCourseRates(String courseId);
+	void deleteByCourse(String courseId);
+
 	
-	/**Smart Algorithem
+	/**Smart Algorithm
+	 * @return 
 	 * @throws IOException 
 	 * @throws Exception **/
-	public void getRecommendations(String userId) throws IOException;
-	public FileWriter writeToCsvFile(Map<String,ArrayList<RecommendationEntity>>recomendationMap) throws IOException;
+	public RecommendationEntity getRecommendations(long userNumber) throws IOException;
+	public FileWriter writeToCsvFile(Map<String,ArrayList<RateEntity>>recomendationMap) throws IOException;
+	public RecommendationEntity recommend(long userNumber) throws Exception;
+	
+	/**Graphs Methods**/
+//	public List<GraphsEntity>getAllGraphs();
+	List<GraphsEntity> getAllGraphs(String userId);
+	List<CourseRateEntity> getAllRatesCourse();
+	
+ 
 }

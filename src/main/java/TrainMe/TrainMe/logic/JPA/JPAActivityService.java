@@ -38,7 +38,6 @@ public class JPAActivityService implements ActivityService {
 				TrainMePlugins plugin = (TrainMePlugins) this.spring.getBean(pluginClass);
 				Object rv = plugin.invokeAction(activityEntity);
 				rvMap = this.jackson.readValue(this.jackson.writeValueAsString(rv), Map.class);
-				
 				activityEntity.getMoreAttributes().clear();
 				activityEntity.getMoreAttributes().putAll(rvMap);
 

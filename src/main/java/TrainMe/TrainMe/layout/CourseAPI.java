@@ -22,6 +22,13 @@ public class CourseAPI {
 		this.courseService = courseService;
 	}
 
+	@CrossOrigin(origins="*")
+	@RequestMapping(method = RequestMethod.DELETE, path = "/trainme/removeCourse/{id}")
+	public void removeCourseById(@PathVariable("id") String id)
+	{
+		this.courseService.deleteByCourseId(id);
+	}
+	
 	@RequestMapping(method = RequestMethod.POST, path = "/trainme/course", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@CrossOrigin(origins = "*")
 	public CourseTO addCourse(@RequestBody CourseTO courseTo) {
