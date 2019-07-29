@@ -1,5 +1,7 @@
 package TrainMe.TrainMe.layout;
 
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -23,7 +25,9 @@ public class UsersAPI {
 		this.userService=userService;
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, path = "/trainme/user", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.POST, path = "/trainme/user", 
+			produces = MediaType.APPLICATION_JSON_VALUE, 
+			consumes = MediaType.APPLICATION_JSON_VALUE)
 	@CrossOrigin(origins="*")
 	public UsersTO addTrainer(@RequestBody UsersTO userTO)
 	{
@@ -37,5 +41,15 @@ public class UsersAPI {
 	public void removeTrainerById(@PathVariable("id") String id)
 	{
 		this.userService.deleteByUserId(id);
+	}
+	
+	@CrossOrigin(origins="*")
+	@RequestMapping(method = RequestMethod.GET, path = "/trainme/getAllUsers", produces = MediaType.APPLICATION_JSON_VALUE)
+	public UsersTO[] getAllTrainers() {		
+		return userService.getAllUsers()
+				.stream()
+				.map(UsersTO::new)
+				.collect(Collectors.toList())
+				.toArray(new UsersTO[0]);
 	}
 }

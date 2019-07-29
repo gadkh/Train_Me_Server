@@ -27,6 +27,7 @@ public class ActivityAPI {
 			produces=MediaType.APPLICATION_JSON_VALUE,
 			consumes=MediaType.APPLICATION_JSON_VALUE)
 		public Object performActivity(@RequestBody ActivitiTO activitiTO)  {
+		
 		ActivityEntity activityRetrive=activitiTO.toEntity();
 		this.activityService.performActivity(activityRetrive);
 		return new ActivitiTO(activityRetrive);

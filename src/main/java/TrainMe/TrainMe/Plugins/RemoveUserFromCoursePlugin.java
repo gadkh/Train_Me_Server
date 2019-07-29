@@ -27,7 +27,8 @@ public class RemoveUserFromCoursePlugin implements TrainMePlugins {
 		UserInCourse userInCourse=new UserInCourse();
 		try {
 			userInCourse = this.jackson.readValue(activityEntity.getAttributesJson(), UserInCourse.class);
-			this.firebaseService.deleteUserFromCourse(userInCourse.getCourseEntity().getCourseId(),userInCourse.getUser().getUserId());
+			this.firebaseService.deleteUserFromCourse(userInCourse.getCourseEntity().getCourseId()
+					,userInCourse.getUser().getUserId(),userInCourse.getCourseEntity().getCourseName());
 			return userInCourse;
 		} catch (IOException e) {
 			throw new RuntimeException(e);

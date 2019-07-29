@@ -22,4 +22,10 @@ public class JPACourseService implements CourseService {
 		return this.firebaseService.addCourse(courseEntity);
 
 	}
+	
+@Override
+	public void deleteByCourseId(String courseId) {
+		// TODO Auto-generated method stub
+	this.firebaseService.deleteByCourse(courseId);	
+	}
 }

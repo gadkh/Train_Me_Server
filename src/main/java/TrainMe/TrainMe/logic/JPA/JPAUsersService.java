@@ -1,5 +1,7 @@
 package TrainMe.TrainMe.logic.JPA;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,5 +29,10 @@ public class JPAUsersService implements UsersService{
 		this.firebaseService.deleteByUserId(userId);
 	}
 	
+	@Override
+	public List<UsersEntity> getAllUsers() {
+		// TODO Auto-generated method stub
+		return this.firebaseService.getAllUsers();
+	}
 
 }

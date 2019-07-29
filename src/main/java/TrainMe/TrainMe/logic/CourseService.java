@@ -4,4 +4,6 @@ import TrainMe.TrainMe.logic.entity.CourseEntity;
 
 public interface CourseService {
 	public CourseEntity saveCourse(CourseEntity courseEntity);
+	public void deleteByCourseId(String courseId);
+
 }
